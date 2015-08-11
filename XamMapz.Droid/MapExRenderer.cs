@@ -1,29 +1,33 @@
+//
+// MapExRenderer.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+        
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps.Android;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Maps;
 using XamMapz;
-using XamMapz.Droid.Renderers;
+using XamMapz.Droid;
 using XamMapz.Messaging;
-using Color = Xamarin.Forms.Color;
-using XamMapz.Droid.Extensions;
 using XamMapz.Extensions;
 
 [assembly: ExportRenderer(typeof(MapEx), typeof(MapExRenderer))]
-namespace XamMapz.Droid.Renderers
+namespace XamMapz.Droid
 {
     /// <summary>
-    /// Extended map renderer for Android
+    /// Map renderer for Android - based on Xamarin Forms' MapRenderer
     /// Using Google Maps of course
     /// </summary>
     class MapExRenderer : MapRenderer, IMapExRenderer
@@ -33,29 +37,34 @@ namespace XamMapz.Droid.Renderers
         /// </summary>
         protected List<Marker> Markers { get; private set; }
         private CameraPosition _lastCameraPosition;
-        private CameraUpdate _cameraUpdateInit;
 
         public MapExRenderer()
         {
             Markers = new List<Marker>();
-            MessagingCenter.Subscribe<MapEx, MapMessage>(this, MapMessage.Message, (map, message) =>
-            {
-                if (message is ZoomMessage)
-                {
-                    var msg = (ZoomMessage)message;
-                    var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(msg.Bounds.ToLatLngBounds(), 0);
-                    if (_initialized == false)
-                        _cameraUpdateInit = cameraUpdate;
-                    else
-                    {
-                        UpdateGoogleMap(formsMap =>
-                        {
-                            NativeMap.MoveCamera(cameraUpdate);
-                        });
-                    }
-                }
-            });
+            //MessagingCenter.Subscribe<MapEx, MapMessage>(this, MapMessage.Message, (map, message) =>
+            //{
+            //    if (message is ZoomMessage)
+            //    {
+            //        var msg = (ZoomMessage)message;
+            //        var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(msg.Bounds.ToLatLngBounds(), 0);
+            //        if (_initialized == false)
+            //            _cameraUpdateInit = cameraUpdate;
+            //        else
+            //        {
+            //            UpdateGoogleMap(formsMap =>
+            //            {
+            //                NativeMap.MoveCamera(cameraUpdate);
+            //            });
+            //        }
+            //    }
+            //});
         }
+
+        ~MapExRenderer()
+        {
+            System.Diagnostics.Debug.WriteLine("MapExRenderer finalized.");
+        }
+
         private bool _disposed;
 
         protected override void Dispose(bool disposing)
@@ -63,6 +72,7 @@ namespace XamMapz.Droid.Renderers
             if (_disposed == false && disposing)
             {
                 _disposed = true;
+                //MessagingCenter.Unsubscribe<MapEx, MapMessage>(this, MapMessage.Message);
                 UnbindFromElement(Element as MapEx);
             }
             base.Dispose(disposing);
@@ -71,7 +81,7 @@ namespace XamMapz.Droid.Renderers
         /// <summary>
         /// View in Xamarin Forms
         /// </summary>
-        private MapEx MapView
+        private MapEx MapEx
         {
             get
             {
@@ -85,8 +95,7 @@ namespace XamMapz.Droid.Renderers
         {
             if (map != null)
             {
-                map.PropertyChanged -= Element_PropertyChanged;
-                //map.RouteChanged -= map_RouteChanged;
+                //map.PropertyChanged -= Element_PropertyChanged;
                 NativeMap.CameraChange -= NativeMap_CameraChange;
                 NativeMap.MarkerClick -= NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
@@ -98,8 +107,7 @@ namespace XamMapz.Droid.Renderers
         {
             if (map != null)
             {
-                map.PropertyChanged += Element_PropertyChanged;
-                //map.RouteChanged += map_RouteChanged;
+                //map.PropertyChanged += Element_PropertyChanged;
                 NativeMap.CameraChange += NativeMap_CameraChange;
                 NativeMap.MarkerClick += NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
@@ -228,7 +236,7 @@ namespace XamMapz.Droid.Renderers
 
         void NativeMap_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
-            var pin = MapView.Pins.FirstOrDefault(p => p.Id == e.Marker.Id); // clicked pin
+            var pin = MapEx.Pins.FirstOrDefault(p => p.Id == e.Marker.Id); // clicked pin
             if (pin == null)
                 return;
             pin.OnClicked();
@@ -238,45 +246,19 @@ namespace XamMapz.Droid.Renderers
 
         protected override void OnElementChanged(ElementChangedEventArgs<View> e)
         {
+            base.OnElementChanged(e);
+
             if (e.OldElement != null)
             {
                 // this never gets called
                 UnbindFromElement(e.OldElement as MapEx);
-                base.OnElementChanged(e);
             }
             if (e.NewElement != null)
             {
-                base.OnElementChanged(e);
                 BindToElement(e.NewElement as MapEx);
                 NativeMap.TrafficEnabled = false;
             }
         }
-
-        void Element_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == MapEx.CenterProperty.PropertyName)
-                UpdateCenter();
-            else if (e.PropertyName == MapEx.ZoomLevelProperty.PropertyName)
-                UpdateZoomLevel();
-        }
-
-        //void Map_AddedToRoute(object sender, XDotNet.Geolocation.GeoPosition e)
-        //{
-        //    if (NativeMap == null)
-        //        return;
-
-        //    // add new point to the last polyline
-        //    if (_polyline == null)
-        //    {
-        //        _polyline = NativeMap.AddPolyline(new PolylineOptions());
-        //        _polyline.Color = Color.Red.ToAndroid().ToArgb();
-        //        _polyline.Width = 10;
-        //    }
-
-        //    var points = _polyline.Points;
-        //    points.Add(e.ToLatLng());
-        //    _polyline.Points = points;
-        //}
 
         private Dictionary<MapPolyline, List<Polyline>> _routes = new Dictionary<MapPolyline, List<Polyline>>();
 
@@ -287,14 +269,14 @@ namespace XamMapz.Droid.Renderers
 
             NativeMap.Clear();
             GC.Collect();
-            if (MapView.Polylines == null)
+            if (MapEx.Polylines == null)
                 return;
 
             //var androidMapView = (MapView)Control;
             if (Control.IsLaidOut == false)
                 return;
 
-            foreach (var route in MapView.Polylines)
+            foreach (var route in MapEx.Polylines)
             {
                 AddRoute(route);
             }
@@ -363,20 +345,6 @@ namespace XamMapz.Droid.Renderers
             action(formsMap);
         }
 
-        /// <summary>
-        /// Move center position
-        /// </summary>
-        private void UpdateCenter()
-        {
-            UpdateGoogleMap(formsMap =>
-            {
-                if (_lastCameraPosition != null && _lastCameraPosition.Target.ToPosition().Equals(formsMap.Center))
-                    return; // no change in camera position
-                var cameraUpdate = CameraUpdateFactory.NewLatLng(formsMap.Center.ToLatLng());
-                NativeMap.MoveCamera(cameraUpdate);
-            });
-        }
-
         private void AddMarker(MapPin pin)
         {
             var op = new MarkerOptions();
@@ -411,28 +379,14 @@ namespace XamMapz.Droid.Renderers
         private void UpdateMarkers()
         {
             ClearMarkers();
-            foreach (var pin in MapView.Pins)
+            foreach (var pin in MapEx.Pins)
             {
                 AddMarker(pin);
             }
         }
 
-        private void UpdateZoomLevel()
-        {
-            UpdateGoogleMap(formsMap =>
-            {
-                if (_lastCameraPosition != null && _lastCameraPosition.Zoom.Equals((float)formsMap.ZoomLevel))
-                    return; // no change in zoom level
-
-                var cameraUpdate = CameraUpdateFactory.ZoomTo((float)MapView.ZoomLevel);
-                NativeMap.MoveCamera(cameraUpdate);
-            });
-        }
-
         private void Update()
         {
-            UpdateCenter();
-            UpdateZoomLevel();
             UpdateRoutes();
             UpdateMarkers();
         }
@@ -443,11 +397,6 @@ namespace XamMapz.Droid.Renderers
             if (!_initialized && r > 0 && b > 0)
             {
                 Update();
-                if (_cameraUpdateInit != null)
-                {
-                    NativeMap.MoveCamera(_cameraUpdateInit);
-                    _cameraUpdateInit = null;
-                }
                 _initialized = true;
             }
         }

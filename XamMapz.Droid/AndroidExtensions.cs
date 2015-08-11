@@ -1,15 +1,21 @@
+//
+// AndroidExtensions.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+        
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
 using Android.Gms.Maps.Model;
 using Xamarin.Forms.Maps;
 
-namespace XamMapz.Droid.Extensions
+namespace XamMapz.Droid
 {
+    /// <summary>
+    /// Extension methods for easier interop between Xamarin Forms Maps and Android platform
+    /// </summary>
     public static class AndroidExtensions
     {
         public static LatLng ToLatLng(this Position pos)

@@ -41,9 +41,10 @@ namespace XamMapz
                 if (message is ViewChangeMessage)
                 {
                     var msg = (ViewChangeMessage)message;
-                    Center = msg.Span.Center;
-                    ZoomLevel = msg.ZoomLevel;
-                    Region = msg.Span;
+                    MoveToRegion(msg.Span);
+                    //Center = msg.Span.Center;
+                    //ZoomLevel = msg.ZoomLevel;
+                    //Region = msg.Span;
                     if (ViewChanged != null)
                         ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
                 }
@@ -55,59 +56,28 @@ namespace XamMapz
             MessagingCenter.Unsubscribe<IMapExRenderer, MapMessage>(this, MapMessage.Message);
         }
 
-        /// <summary>
-        /// Zooms to the given <see cref="MapSpan"/>
-        /// </summary>
-        /// <param name="bounds">Bound to zoom</param>
-        public void ZoomTo(MapSpan bounds)
+        public new void MoveToRegion(MapSpan span)
         {
-            MessagingCenter.Send<MapEx, MapMessage>(this, MapMessage.Message, new ZoomMessage(bounds));
+            Region = span;
+            base.MoveToRegion(span);
         }
-
-        #region ZoomLevel dependency property
-
-        public static readonly BindableProperty ZoomLevelProperty = BindableProperty.Create<MapEx, double>(map => map.ZoomLevel, 0);
-
-        public double ZoomLevel
-        {
-            get
-            {
-                return (double)GetValue(ZoomLevelProperty);
-            }
-            set
-            {
-                SetValue(ZoomLevelProperty, value);
-            }
-        }
-
-        #endregion
-
-        #region Center dependency property
-
-        public static readonly BindableProperty CenterProperty = BindableProperty.Create<MapEx, Position>(map => map.Center, new Position(0, 0));
 
         public Position Center
         {
             get
             {
-                return (Position)GetValue(CenterProperty);
+                return Region.Center;
             }
             set
             {
-                SetValue(CenterProperty, value);
+                Region = new MapSpan(value, Region.LatitudeDegrees, Region.LongitudeDegrees);
             }
         }
-
-        #endregion
-
-        #region Region dependency property
 
         public MapSpan Region
         {
             get; private set;
         }
-
-        #endregion
 
         private ObservableCollection<MapPolyline> _polylines = new ObservableCollection<MapPolyline>();
 
