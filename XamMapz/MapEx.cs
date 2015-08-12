@@ -41,10 +41,7 @@ namespace XamMapz
                 if (message is ViewChangeMessage)
                 {
                     var msg = (ViewChangeMessage)message;
-                    MoveToRegion(msg.Span);
-                    //Center = msg.Span.Center;
-                    //ZoomLevel = msg.ZoomLevel;
-                    //Region = msg.Span;
+                    Region = msg.Span;
                     if (ViewChanged != null)
                         ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
                 }
@@ -59,7 +56,8 @@ namespace XamMapz
         public new void MoveToRegion(MapSpan span)
         {
             Region = span;
-            base.MoveToRegion(span);
+            //base.MoveToRegion(span);
+            MessagingCenter.Send<MapEx, MapMessage>(this, MapMessage.Message, new ZoomMessage(span));
         }
 
         public Position Center
@@ -70,13 +68,14 @@ namespace XamMapz
             }
             set
             {
-                Region = new MapSpan(value, Region.LatitudeDegrees, Region.LongitudeDegrees);
+                MoveToRegion(new MapSpan(value, Region.LatitudeDegrees, Region.LongitudeDegrees));
             }
         }
 
         public MapSpan Region
         {
-            get; private set;
+            get;
+            private set;
         }
 
         private ObservableCollection<MapPolyline> _polylines = new ObservableCollection<MapPolyline>();

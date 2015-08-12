@@ -6,7 +6,7 @@
 //
 //    Copyright (C) 2015, Gabor Nemeth
 //
-        
+
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using System;
@@ -41,23 +41,6 @@ namespace XamMapz.Droid
         public MapExRenderer()
         {
             Markers = new List<Marker>();
-            //MessagingCenter.Subscribe<MapEx, MapMessage>(this, MapMessage.Message, (map, message) =>
-            //{
-            //    if (message is ZoomMessage)
-            //    {
-            //        var msg = (ZoomMessage)message;
-            //        var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(msg.Bounds.ToLatLngBounds(), 0);
-            //        if (_initialized == false)
-            //            _cameraUpdateInit = cameraUpdate;
-            //        else
-            //        {
-            //            UpdateGoogleMap(formsMap =>
-            //            {
-            //                NativeMap.MoveCamera(cameraUpdate);
-            //            });
-            //        }
-            //    }
-            //});
         }
 
         ~MapExRenderer()
@@ -72,7 +55,6 @@ namespace XamMapz.Droid
             if (_disposed == false && disposing)
             {
                 _disposed = true;
-                //MessagingCenter.Unsubscribe<MapEx, MapMessage>(this, MapMessage.Message);
                 UnbindFromElement(Element as MapEx);
             }
             base.Dispose(disposing);
@@ -95,6 +77,7 @@ namespace XamMapz.Droid
         {
             if (map != null)
             {
+                MessagingCenter.Unsubscribe<MapEx, MapMessage>(this, MapMessage.Message);
                 //map.PropertyChanged -= Element_PropertyChanged;
                 NativeMap.CameraChange -= NativeMap_CameraChange;
                 NativeMap.MarkerClick -= NativeMap_MarkerClick;
@@ -112,6 +95,16 @@ namespace XamMapz.Droid
                 NativeMap.MarkerClick += NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnRoutesCollectionChanged;
+                MessagingCenter.Subscribe<MapEx, MapMessage>(this, MapMessage.Message, OnMapMessage);
+            }
+        }
+
+        private void OnMapMessage(MapEx map, MapMessage message)
+        {
+            if (message is ZoomMessage)
+            {
+                //var msg = (ZoomMessage)message;
+                UpdateRegion();
             }
         }
 
@@ -216,7 +209,10 @@ namespace XamMapz.Droid
 
         void NativeMap_CameraChange(object sender, GoogleMap.CameraChangeEventArgs e)
         {
-            _lastCameraPosition = e.Position;
+            //if (_lastCameraPosition != null && _lastCameraPosition.Target == e.Position.Target)
+            //    return;
+
+            //_lastCameraPosition = e.Position;
             UpdatePosition(e.Position);
         }
 
@@ -230,8 +226,7 @@ namespace XamMapz.Droid
             var bound = new MapSpan(new Position(center.Latitude, center.Longitude),
                 distanceInDegrees.Latitude * 2, distanceInDegrees.Longitude * 2);
 
-            MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage,
-                new ViewChangeMessage { Span = bound, ZoomLevel = pos.Zoom });
+            MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage { Span = bound, ZoomLevel = pos.Zoom });
         }
 
         void NativeMap_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
@@ -385,8 +380,18 @@ namespace XamMapz.Droid
             }
         }
 
+        private void UpdateRegion()
+        {
+            UpdateGoogleMap(formsMap =>
+            {
+                var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
+                NativeMap.MoveCamera(cameraUpdate);
+            });
+        }
+
         private void Update()
         {
+            UpdateRegion();
             UpdateRoutes();
             UpdateMarkers();
         }
