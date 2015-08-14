@@ -37,13 +37,13 @@ namespace XamMapz
         {
             MessagingCenter.Subscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
             {
-                Debug.WriteLine("Map renderer message recieved: {0}", message);
                 if (message is ViewChangeMessage)
                 {
                     var msg = (ViewChangeMessage)message;
                     Region = msg.Span;
                     if (ViewChanged != null)
                         ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
+                    Debug.WriteLine("ViewChangeMessage recieved:\n\tPosition: {0} {1}", msg.Span.Center.Latitude, msg.Span.Center.Longitude);
                 }
             });
         }
@@ -56,7 +56,6 @@ namespace XamMapz
         public new void MoveToRegion(MapSpan span)
         {
             Region = span;
-            //base.MoveToRegion(span);
             MessagingCenter.Send<MapEx, MapMessage>(this, MapMessage.Message, new ZoomMessage(span));
         }
 
