@@ -9,6 +9,7 @@
         
 using System;
 using Android.Gms.Maps.Model;
+using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 
 namespace XamMapz.Droid
@@ -60,6 +61,14 @@ namespace XamMapz.Droid
                     return BitmapDescriptorFactory.HueYellow;
                 default:
                     throw new NotSupportedException(string.Format("Unknown pin color: {0}", color));
+            }
+        }
+
+        public static void Add(this PolylineOptions options, Position pos)
+        {
+            using (var latlng = pos.ToLatLng())
+            {
+                options.Add(latlng);
             }
         }
     }

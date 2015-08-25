@@ -22,6 +22,8 @@ using XamMapz;
 using XamMapz.Droid;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
+using XDotNet;
+using XDotNet.Diagnostics;
 
 [assembly: ExportRenderer(typeof(MapEx), typeof(MapExRenderer))]
 namespace XamMapz.Droid
@@ -37,7 +39,7 @@ namespace XamMapz.Droid
         /// </summary>
         protected Dictionary<MapPin, Marker> Markers { get; private set; }
 
-        private Dictionary<MapPolyline, List<Polyline>> _polylines = new Dictionary<MapPolyline, List<Polyline>>();
+        private Dictionary<MapPolyline, PolylineAdv> _polylines = new Dictionary<MapPolyline, PolylineAdv>();
 
         public MapExRenderer()
         {
@@ -150,14 +152,37 @@ namespace XamMapz.Droid
             }
         }
 
-        private void polyline_PositionChanged(object sender, MapRoutePositionChangeEventArgs e)
+        private void polyline_PositionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var polyline = sender as MapPolyline;
             if (polyline == null)
                 return;
 
-            RemovePolyline(polyline);
-            AddPolyline(polyline);
+            int time = Benchmark.MeasureTime(() =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    // modify the points
+                    var route = _polylines[polyline];
+                    if (route != null)
+                    {
+                        foreach (Position pos in e.NewItems)
+                        {
+                            using (var latlng = pos.ToLatLng())
+                            {
+                                route.Add(latlng);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // rebuild polyline - this is slow
+                    RemovePolyline(polyline);
+                    AddPolyline(polyline);
+                }
+            });
+            Log.Diagnostics("Add position to route time: {0} sec", time / 1000.0f);
         }
 
         void polyline_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -166,14 +191,16 @@ namespace XamMapz.Droid
             if (polyline == null)
                 return;
 
+            var line = _polylines[polyline];
             if (e.PropertyName == MapPolyline.ColorProperty.PropertyName)
             {
                 // change color of the polyline
-                foreach (var line in _polylines[polyline])
-                {
-                    line.Color = polyline.Color.ToAndroid().ToArgb();
-                    line.ZIndex = 255;
-                }
+                line.Color = polyline.Color.ToAndroid().ToArgb();
+            }
+            else if (e.PropertyName == MapPolyline.ZIndexProperty.PropertyName)
+            {
+                // change Z-index of the polyline
+                line.ZIndex = polyline.ZIndex;
             }
         }
 
@@ -294,25 +321,35 @@ namespace XamMapz.Droid
             });
         }
 
-        private void RemovePolyline(MapPolyline route)
+        private void RemovePolyline(MapPolyline polyline)
         {
-            bool contains = _polylines.ContainsKey(route);
-            var routeEntry = contains ? _polylines[route] : new List<Polyline>();
-            // remove the old polyline from the map
-            foreach (var polyline in routeEntry)
-            {
-                polyline.Remove();
-            }
-            routeEntry.Clear();
+            if (_polylines.ContainsKey(polyline) == false)
+                return;
+
+            RemovePolylineFromMap(polyline);
+            _polylines.Remove(polyline);
         }
 
+        private void RemovePolylineFromMap(MapPolyline polyline)
+        {
+            if (_polylines.ContainsKey(polyline))
+            {
+                var line = _polylines[polyline];
+                // remove the old polyline from the map
+                line.RemoveFromMap();
+                line.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Remove all polylines
+        /// </summary>
         private void ClearPolylines()
         {
-            // Remove all polylines
             foreach (var polylineEntry in _polylines)
             {
                 UnbindPolyline(polylineEntry.Key);
-                RemovePolyline(polylineEntry.Key);
+                RemovePolylineFromMap(polylineEntry.Key);
             }
             _polylines.Clear();
         }
@@ -322,34 +359,23 @@ namespace XamMapz.Droid
             var op = new PolylineOptions();
             op.InvokeColor(polyline.Color.ToAndroid().ToArgb());
             op.InvokeWidth((float)polyline.Width);
+            op.InvokeZIndex(polyline.ZIndex);
             return op;
         }
 
         private void AddPolyline(MapPolyline polyline)
         {
-            bool contains = _polylines.ContainsKey(polyline);
-            var routeEntry = contains ? _polylines[polyline] : new List<Polyline>();
             // add the new one
-            const int polylineSegmentLength = 100; // make polyline segments max. 100 points long
-            var num = 0;
-            var op = CreatePolylineOptions(polyline);
-            foreach (var pt in polyline.Positions)
+            using (var op = CreatePolylineOptions(polyline))
             {
-                op.Add(pt.ToLatLng());
-                if (num++ == polylineSegmentLength)
+                foreach (var pt in polyline.Positions)
                 {
-                    routeEntry.Add(AddPolyline(op));
-                    op = CreatePolylineOptions(polyline);
-                    op.Add(pt.ToLatLng());
-                    num = 1;
+                    op.Add(pt);
                 }
+                // add the last polyline segment
+                var line = PolylineAdv.Add(NativeMap, op);
+                _polylines.Add(polyline, line);
             }
-            // add the last polyline segment
-            if (op.Points.Count > 0)
-                routeEntry.Add(AddPolyline(op));
-            // add to the dictionary, if not contained yet
-            if (!contains)
-                _polylines.Add(polyline, routeEntry);
         }
 
         private Polyline AddPolyline(PolylineOptions option)
@@ -375,13 +401,15 @@ namespace XamMapz.Droid
 
         private void AddMarker(MapPin pin)
         {
-            var op = new MarkerOptions();
-            op.SetTitle(pin.Label);
-            op.SetPosition(pin.Position.ToLatLng());
-            op.InvokeIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
-            var marker = NativeMap.AddMarker(op);
-            pin.Id = marker.Id;
-            Markers.Add(pin, marker);
+            using (var op = new MarkerOptions())
+            {
+                op.SetTitle(pin.Label);
+                op.SetPosition(pin.Position.ToLatLng());
+                op.InvokeIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
+                var marker = NativeMap.AddMarker(op);
+                pin.Id = marker.Id;
+                Markers.Add(pin, marker);
+            }
         }
 
         private void RemoveMarker(MapPin pin)
@@ -392,6 +420,8 @@ namespace XamMapz.Droid
             var markerToRemove = Markers[pin];
 
             markerToRemove.Remove();
+            markerToRemove.Dispose();
+            UnbindPin(pin);
             Markers.Remove(pin);
         }
 
@@ -401,6 +431,7 @@ namespace XamMapz.Droid
             foreach (var marker in Markers)
             {
                 marker.Value.Remove();
+                marker.Value.Dispose();
                 UnbindPin(marker.Key);
             }
             Markers.Clear();

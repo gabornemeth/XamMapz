@@ -44,7 +44,25 @@ namespace XamMapz
 
         public double Width { get; set; }
 
-        public event EventHandler<MapRoutePositionChangeEventArgs> PositionChanged;
+        #region ZIndex bindable property
+
+        public static readonly BindableProperty ZIndexProperty = BindableProperty.Create<MapPolyline, float>(route => route.ZIndex, 1.0f);
+
+        public float ZIndex
+        {
+            get
+            {
+                return (float)GetValue(ZIndexProperty);
+            }
+            set
+            {
+                SetValue(ZIndexProperty, value);
+            }
+        }
+
+        #endregion
+
+        public event NotifyCollectionChangedEventHandler PositionChanged;
 
         public MapPolyline()
         {
@@ -55,11 +73,8 @@ namespace XamMapz
 
         private void Positions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                if (PositionChanged != null)
-                    PositionChanged(this, new MapRoutePositionChangeEventArgs(NotifyCollectionChangedAction.Add, e.NewItems.Cast<Position>().ToList()));
-            }
+            if (PositionChanged != null)
+                PositionChanged(this, e);
         }
     }
 }
