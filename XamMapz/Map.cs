@@ -1,5 +1,5 @@
 ﻿//
-// MapEx.cs
+// Map.cs
 //
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
@@ -17,7 +17,10 @@ using XamMapz.Messaging;
 
 namespace XamMapz
 {
-    public class MapEx : Map
+    /// <summary>
+    /// Map control based on <see cref="Xamarin.Forms.Maps.Map"/>
+    /// </summary>
+    public class Map : Xamarin.Forms.Maps.Map
     {
         private ObservableCollection<MapPin> _pins = new ObservableCollection<MapPin>();
 
@@ -33,30 +36,35 @@ namespace XamMapz
 
         public event EventHandler<MapViewChangedEventArgs> ViewChanged;
 
-        public MapEx()
+        public Map()
         {
             MessagingCenter.Subscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
             {
-                if (message is ViewChangeMessage)
-                {
-                    var msg = (ViewChangeMessage)message;
-                    Region = msg.Span;
-                    if (ViewChanged != null)
-                        ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
-                    Debug.WriteLine("ViewChangeMessage recieved:\n\tPosition: {0} {1}", msg.Span.Center.Latitude, msg.Span.Center.Longitude);
-                }
+                OnMapMessage(message);
             });
         }
 
-        ~MapEx()
+        ~Map()
         {
-            MessagingCenter.Unsubscribe<IMapExRenderer, MapMessage>(this, MapMessage.Message);
+            MessagingCenter.Unsubscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage);
+        }
+
+        protected virtual void OnMapMessage(MapMessage message)
+        {
+            if (message is ViewChangeMessage)
+            {
+                var msg = (ViewChangeMessage)message;
+                Region = msg.Span;
+                if (ViewChanged != null)
+                    ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
+                Debug.WriteLine("ViewChangeMessage recieved:\n\tPosition: {0} {1}", msg.Span.Center.Latitude, msg.Span.Center.Longitude);
+            }
         }
 
         public new void MoveToRegion(MapSpan span)
         {
             Region = span;
-            MessagingCenter.Send<MapEx, MapMessage>(this, MapMessage.Message, new ZoomMessage(span));
+            MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new ZoomMessage(span));
         }
 
         public Position Center
@@ -87,6 +95,13 @@ namespace XamMapz
         internal ObservableCollection<MapPolyline> PolylinesInternal
         {
             get { return _polylines; }
+        }
+
+        public Point ProjectToScreen(Position position)
+        {
+            var msg = new MapProjectMessage(position);
+            MessagingCenter.Send<XamMapz.Map, MapMessage>(this, MapMessage.Message, msg);
+            return msg.ScreenPosition;
         }
     }
 }

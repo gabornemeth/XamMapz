@@ -25,14 +25,14 @@ using XamMapz.Extensions;
 using XDotNet;
 using XDotNet.Diagnostics;
 
-[assembly: ExportRenderer(typeof(MapEx), typeof(MapExRenderer))]
+[assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
 namespace XamMapz.Droid
 {
     /// <summary>
     /// Map renderer for Android - based on Xamarin Forms' MapRenderer
     /// Using Google Maps of course
     /// </summary>
-    class MapExRenderer : MapRenderer, IMapExRenderer
+    public class MapRenderer : Xamarin.Forms.Maps.Android.MapRenderer, IMapExRenderer
     {
         /// <summary>
         /// Displayed markers
@@ -41,12 +41,12 @@ namespace XamMapz.Droid
 
         private Dictionary<MapPolyline, PolylineAdv> _polylines = new Dictionary<MapPolyline, PolylineAdv>();
 
-        public MapExRenderer()
+        public MapRenderer()
         {
             Markers = new Dictionary<MapPin, Marker>();
         }
 
-        ~MapExRenderer()
+        ~MapRenderer()
         {
             System.Diagnostics.Debug.WriteLine("MapExRenderer finalized.");
         }
@@ -58,7 +58,7 @@ namespace XamMapz.Droid
             if (_disposed == false && disposing)
             {
                 _disposed = true;
-                UnbindFromElement(Element as MapEx);
+                UnbindFromElement(Element as Map);
             }
             base.Dispose(disposing);
         }
@@ -66,21 +66,21 @@ namespace XamMapz.Droid
         /// <summary>
         /// View in Xamarin Forms
         /// </summary>
-        private MapEx MapEx
+        private Map MapEx
         {
             get
             {
-                return Element as MapEx;
+                return Element as Map;
             }
         }
 
         private bool _initialized;
 
-        private void UnbindFromElement(MapEx map)
+        private void UnbindFromElement(Map map)
         {
             if (map != null)
             {
-                MessagingCenter.Unsubscribe<MapEx, MapMessage>(this, MapMessage.Message);
+                MessagingCenter.Unsubscribe<Map, MapMessage>(this, MapMessage.Message);
                 NativeMap.CameraChange -= NativeMap_CameraChange;
                 NativeMap.MarkerClick -= NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
@@ -93,7 +93,7 @@ namespace XamMapz.Droid
             }
         }
 
-        private void BindToElement(MapEx map)
+        private void BindToElement(Map map)
         {
             if (map != null)
             {
@@ -101,17 +101,27 @@ namespace XamMapz.Droid
                 NativeMap.MarkerClick += NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
-                MessagingCenter.Subscribe<MapEx, MapMessage>(this, MapMessage.Message, OnMapMessage);
+                MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (map1, message) =>
+                {
+                    OnMapMessage(map1, message);
+                });
             }
         }
 
-        private void OnMapMessage(MapEx map, MapMessage message)
+        protected virtual void OnMapMessage(Map map, MapMessage message)
         {
             if (message is ZoomMessage)
             {
                 //var msg = (ZoomMessage)message;
                 UpdateRegion();
             }
+            else if (message is MapProjectMessage)
+            {
+                var msg = (MapProjectMessage)message;
+                var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
+                msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
+            }
+
         }
 
         private void BindPolyline(MapPolyline polyline)
@@ -252,7 +262,11 @@ namespace XamMapz.Droid
                 return;
 
             var marker = Markers[pin];
+            OnPinPropertyChanged(pin, marker, e);
+        }
 
+        protected virtual void OnPinPropertyChanged(MapPin pin, Marker marker, PropertyChangedEventArgs e)
+        {
             if (e.PropertyName == MapPin.ColorProperty.PropertyName)
             {
                 marker.SetIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
@@ -277,8 +291,14 @@ namespace XamMapz.Droid
 
             var bound = new MapSpan(new Position(center.Latitude, center.Longitude),
                 distanceInDegrees.Latitude * 2, distanceInDegrees.Longitude * 2);
+            OnCameraChange(bound, pos);
 
             MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage { Span = bound, ZoomLevel = pos.Zoom });
+        }
+
+        protected virtual void OnCameraChange(MapSpan span, CameraPosition pos)
+        {
+            
         }
 
         void NativeMap_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
@@ -298,11 +318,11 @@ namespace XamMapz.Droid
             if (e.OldElement != null)
             {
                 // this never gets called
-                UnbindFromElement(e.OldElement as MapEx);
+                UnbindFromElement(e.OldElement as Map);
             }
             if (e.NewElement != null)
             {
-                BindToElement(e.NewElement as MapEx);
+                BindToElement(e.NewElement as Map);
                 NativeMap.TrafficEnabled = false;
             }
         }
@@ -386,7 +406,7 @@ namespace XamMapz.Droid
             return polyline;
         }
 
-        private void UpdateGoogleMap(Action<MapEx> action)
+        private void UpdateGoogleMap(Action<Map> action)
         {
             if (Control == null)
                 return; // this should not occur
@@ -394,7 +414,7 @@ namespace XamMapz.Droid
             if (!_initialized && !Control.IsLaidOut)
                 return;
 
-            var formsMap = (MapEx)Element;
+            var formsMap = (Map)Element;
 
             action(formsMap);
         }
@@ -405,7 +425,7 @@ namespace XamMapz.Droid
             {
                 op.SetTitle(pin.Label);
                 op.SetPosition(pin.Position.ToLatLng());
-                op.InvokeIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
+                op.SetIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
                 var marker = NativeMap.AddMarker(op);
                 pin.Id = marker.Id;
                 Markers.Add(pin, marker);

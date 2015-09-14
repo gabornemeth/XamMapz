@@ -40,7 +40,7 @@
     <Compile Include="EventSuspender.cs" />
     <Compile Include="Extensions\MapExtensions.cs" />
     <Compile Include="IMapExRenderer.cs" />
-    <Compile Include="MapEx.cs" />
+    <Compile Include="Map.cs" />
     <Compile Include="MapPinColor.cs" />
     <Compile Include="MapRoutePositionChangeEventArgs.cs" />
     <Compile Include="Messaging\MapMessage.cs" />
@@ -48,6 +48,7 @@
     <Compile Include="MapPolyline.cs" />
     <Compile Include="MapRouteChangeEventArgs.cs" />
     <Compile Include="MapViewChangedEventArgs.cs" />
+    <Compile Include="Messaging\MapProjectMessage.cs" />
     <Compile Include="Messaging\ZoomMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ViewChangeMessage.cs" />
