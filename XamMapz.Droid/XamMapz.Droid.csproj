@@ -146,10 +146,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\xdotnet\XDotNet.Common\XDotNet.Common.csproj">
-      <Project>{A78F59EE-456E-4512-9A59-9B908D98A58D}</Project>
-      <Name>XDotNet.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\XamMapz\XamMapz.csproj">
       <Project>{4A60DBF6-383D-4FB0-AAA3-5DD96E34E680}</Project>
       <Name>XamMapz</Name>

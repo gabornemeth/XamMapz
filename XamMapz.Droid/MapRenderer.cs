@@ -22,8 +22,6 @@ using XamMapz;
 using XamMapz.Droid;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
-using XDotNet;
-using XDotNet.Diagnostics;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
 namespace XamMapz.Droid
@@ -121,7 +119,6 @@ namespace XamMapz.Droid
                 var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
             }
-
         }
 
         private void BindPolyline(MapPolyline polyline)
@@ -168,31 +165,27 @@ namespace XamMapz.Droid
             if (polyline == null)
                 return;
 
-            int time = Benchmark.MeasureTime(() =>
+            if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                if (e.Action == NotifyCollectionChangedAction.Add)
+                // modify the points
+                var route = _polylines[polyline];
+                if (route != null)
                 {
-                    // modify the points
-                    var route = _polylines[polyline];
-                    if (route != null)
+                    foreach (Position pos in e.NewItems)
                     {
-                        foreach (Position pos in e.NewItems)
+                        using (var latlng = pos.ToLatLng())
                         {
-                            using (var latlng = pos.ToLatLng())
-                            {
-                                route.Add(latlng);
-                            }
+                            route.Add(latlng);
                         }
                     }
                 }
-                else
-                {
-                    // rebuild polyline - this is slow
-                    RemovePolyline(polyline);
-                    AddPolyline(polyline);
-                }
-            });
-            Log.Diagnostics("Add position to route time: {0} sec", time / 1000.0f);
+            }
+            else
+            {
+                // rebuild polyline - this is slow
+                RemovePolyline(polyline);
+                AddPolyline(polyline);
+            }
         }
 
         void polyline_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -211,6 +204,11 @@ namespace XamMapz.Droid
             {
                 // change Z-index of the polyline
                 line.ZIndex = polyline.ZIndex;
+            }
+            else if (e.PropertyName == MapPolyline.PositionsProperty)
+            {
+                RemovePolyline(polyline);
+                AddPolyline(polyline);
             }
         }
 
@@ -298,7 +296,7 @@ namespace XamMapz.Droid
 
         protected virtual void OnCameraChange(MapSpan span, CameraPosition pos)
         {
-            
+
         }
 
         void NativeMap_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)

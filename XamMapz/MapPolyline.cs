@@ -22,7 +22,35 @@ namespace XamMapz
     /// </summary>
     public class MapPolyline : BindableObject
     {
-        public IList<Position> Positions { get; private set; }
+        private ObservableCollection<Position> _positions;
+        private EventSuspender _suspendPositionsChanged = new EventSuspender();
+
+        public const string PositionsProperty = "Positions";
+
+        public IList<Position> Positions
+        {
+            get
+            {
+                return _positions;
+            }
+            set
+            {
+                _suspendPositionsChanged.Suspend();
+                try
+                {
+                    foreach (var pos in value)
+                    {
+                        _positions.Add(pos);
+                    }
+                    OnPropertyChanged();
+                }
+                finally
+                {
+                    _suspendPositionsChanged.Allow();
+                }
+            }
+        }
+
 
         #region Color bindable property
 
@@ -66,13 +94,15 @@ namespace XamMapz
 
         public MapPolyline()
         {
-            var positions = new ObservableCollection<Position>();
-            positions.CollectionChanged += Positions_CollectionChanged;
-            Positions = positions;
+            _positions = new ObservableCollection<Position>();
+            _positions.CollectionChanged += Positions_CollectionChanged;
         }
 
         private void Positions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (_suspendPositionsChanged.IsSuspended)
+                return;
+            
             if (PositionChanged != null)
                 PositionChanged(this, e);
         }
