@@ -39,9 +39,11 @@ namespace XamMapz
         public Map()
         {
             MessagingCenter.Subscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
-            {
-                OnMapMessage(message);
-            });
+                {
+                    if (message.Map != this)
+                        return; // filter by instance
+                    OnMapMessage(message);
+                });
         }
 
         ~Map()
@@ -64,7 +66,7 @@ namespace XamMapz
         public new void MoveToRegion(MapSpan span)
         {
             Region = span;
-            MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new ZoomMessage(span));
+            MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new ZoomMessage(this, span));
         }
 
         public Position Center
@@ -99,7 +101,7 @@ namespace XamMapz
 
         public Point ProjectToScreen(Position position)
         {
-            var msg = new MapProjectMessage(position);
+            var msg = new MapProjectMessage(this, position);
             MessagingCenter.Send<XamMapz.Map, MapMessage>(this, MapMessage.Message, msg);
             return msg.ScreenPosition;
         }

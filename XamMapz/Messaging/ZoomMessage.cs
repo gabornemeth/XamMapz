@@ -16,7 +16,7 @@ namespace XamMapz.Messaging
     {
         public MapSpan Bounds { get; private set; }
 
-        public ZoomMessage(MapSpan bounds)
+        public ZoomMessage(Map map, MapSpan bounds) : base(map)
         {
             Bounds = bounds;
         }

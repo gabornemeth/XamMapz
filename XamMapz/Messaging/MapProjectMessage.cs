@@ -12,7 +12,7 @@ namespace XamMapz.Messaging
         public Position Position { get; private set; }
         public Point ScreenPosition { get; set; }
 
-        public MapProjectMessage(Position position)
+        public MapProjectMessage(Map map, Position position) : base(map)
         {
             Position = position;
         }

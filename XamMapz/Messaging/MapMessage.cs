@@ -18,5 +18,16 @@ namespace XamMapz.Messaging
         /// Identifier for messages sent by MapExRenderer to MapEx
         /// </summary>
         public const string RendererMessage = "MapExRendererMessage";
+
+        /// <summary>
+        /// Instance of <see cref="Map"/>
+        /// </summary>
+        /// <value>The map.</value>
+        public Map Map { get; private set; }
+
+        protected MapMessage(Map map)
+        {
+            Map = map;
+        }
     }
 }

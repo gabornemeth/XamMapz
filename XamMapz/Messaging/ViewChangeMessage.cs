@@ -10,5 +10,9 @@ namespace XamMapz.Messaging
     {
         public MapSpan Span { get; set; }
         public float ZoomLevel { get; set; }
+
+        public ViewChangeMessage(Map map) : base(map)
+        {
+        }
     }
 }

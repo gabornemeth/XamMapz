@@ -100,9 +100,13 @@ namespace XamMapz.Droid
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
                 MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (map1, message) =>
-                {
-                    OnMapMessage(map1, message);
-                });
+                    {
+                        // Handle only messages sent by Element
+                        if (map1 != MapEx)
+                            return;
+                        
+                        OnMapMessage(map1, message);
+                    });
             }
         }
 
@@ -288,10 +292,10 @@ namespace XamMapz.Droid
             var distanceInDegrees = northWest.DistanceFrom(center);
 
             var bound = new MapSpan(new Position(center.Latitude, center.Longitude),
-                distanceInDegrees.Latitude * 2, distanceInDegrees.Longitude * 2);
+                            distanceInDegrees.Latitude * 2, distanceInDegrees.Longitude * 2);
             OnCameraChange(bound, pos);
 
-            MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage { Span = bound, ZoomLevel = pos.Zoom });
+            MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage(MapEx) { Span = bound, ZoomLevel = pos.Zoom });
         }
 
         protected virtual void OnCameraChange(MapSpan span, CameraPosition pos)
@@ -328,15 +332,15 @@ namespace XamMapz.Droid
         private void UpdatePolylines()
         {
             UpdateGoogleMap(formsMap =>
-            {
-                ClearPolylines();
-
-                foreach (var polyline in formsMap.Polylines)
                 {
-                    AddPolyline(polyline);
-                    BindPolyline(polyline);
-                }
-            });
+                    ClearPolylines();
+
+                    foreach (var polyline in formsMap.Polylines)
+                    {
+                        AddPolyline(polyline);
+                        BindPolyline(polyline);
+                    }
+                });
         }
 
         private void RemovePolyline(MapPolyline polyline)
@@ -467,10 +471,10 @@ namespace XamMapz.Droid
         private void UpdateRegion()
         {
             UpdateGoogleMap(formsMap =>
-            {
-                var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
-                NativeMap.MoveCamera(cameraUpdate);
-            });
+                {
+                    var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
+                    NativeMap.MoveCamera(cameraUpdate);
+                });
         }
 
         private void Update()
