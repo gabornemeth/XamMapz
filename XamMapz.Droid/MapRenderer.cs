@@ -88,6 +88,10 @@ namespace XamMapz.Droid
                     polyline.PositionChanged -= polyline_PositionChanged;
                     polyline.PropertyChanged -= polyline_PropertyChanged;
                 }
+                foreach (var pin in map.Pins)
+                {
+                    pin.PropertyChanged -= pin_PropertyChanged;
+                }
             }
         }
 
@@ -465,6 +469,7 @@ namespace XamMapz.Droid
             foreach (var pin in MapEx.Pins)
             {
                 AddMarker(pin);
+                BindPin(pin);
             }
         }
 
