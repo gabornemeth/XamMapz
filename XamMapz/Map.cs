@@ -38,7 +38,7 @@ namespace XamMapz
 
         public Map()
         {
-            MessagingCenter.Subscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
+            MessagingCenter.Subscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
                 {
                     if (message.Map != this)
                         return; // filter by instance
@@ -48,7 +48,7 @@ namespace XamMapz
 
         ~Map()
         {
-            MessagingCenter.Unsubscribe<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage);
+            MessagingCenter.Unsubscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage);
         }
 
         protected virtual void OnMapMessage(MapMessage message)

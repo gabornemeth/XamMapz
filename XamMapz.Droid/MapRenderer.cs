@@ -30,7 +30,7 @@ namespace XamMapz.Droid
     /// Map renderer for Android - based on Xamarin Forms' MapRenderer
     /// Using Google Maps of course
     /// </summary>
-    public class MapRenderer : Xamarin.Forms.Maps.Android.MapRenderer, IMapExRenderer
+    public class MapRenderer : Xamarin.Forms.Maps.Android.MapRenderer, IMapRenderer
     {
         /// <summary>
         /// Displayed markers
@@ -299,7 +299,7 @@ namespace XamMapz.Droid
                             distanceInDegrees.Latitude * 2, distanceInDegrees.Longitude * 2);
             OnCameraChange(bound, pos);
 
-            MessagingCenter.Send<IMapExRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage(MapEx) { Span = bound, ZoomLevel = pos.Zoom });
+            MessagingCenter.Send<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage, new ViewChangeMessage(MapEx) { Span = bound, ZoomLevel = pos.Zoom });
         }
 
         protected virtual void OnCameraChange(MapSpan span, CameraPosition pos)
