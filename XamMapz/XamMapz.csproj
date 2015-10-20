@@ -54,6 +54,8 @@
     <Compile Include="Messaging\ViewChangeMessage.cs" />
     <Compile Include="MapRenderHelper.cs" />
     <Compile Include="IMapRenderer.cs" />
+    <Compile Include="MapDictionary.cs" />
+    <Compile Include="MapElementDictionary.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

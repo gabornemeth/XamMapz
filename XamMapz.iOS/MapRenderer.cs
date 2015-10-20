@@ -17,7 +17,7 @@ namespace XamMapz.iOS
     public class MapRenderer : Xamarin.Forms.Maps.iOS.MapRenderer, IMapRenderer<MKPointAnnotation, MKPolyline>
     {
         private MapRenderHelper<MKPointAnnotation, MKPolyline> _renderHelper;
-        private Dictionary<MKPolyline, MapPolyline> _polylines = new Dictionary<MKPolyline, MapPolyline>();
+        private MapDictionary<MKPointAnnotation, MKPolyline> _dictionary = new MapDictionary<MKPointAnnotation, MKPolyline>();
 
         protected MKMapView NativeMap
         {
@@ -53,8 +53,6 @@ namespace XamMapz.iOS
             {
                 Bind(e.NewElement as Map);
                 UpdateRegion();
-                _renderHelper.UpdateMarkers();
-                _renderHelper.UpdatePolylines();
             }
         }
 
@@ -62,6 +60,7 @@ namespace XamMapz.iOS
         {
             _renderHelper.UnbindFromElement();
             NativeMap.Delegate = null;
+            _dictionary.Clear();
         }
 
         private void Bind(Map map)
@@ -79,6 +78,9 @@ namespace XamMapz.iOS
             }
         }
 
+        /// <summary>
+        /// Custom <see cref="MKMapViewDelegate"/> for handling events of the map control.
+        /// </summary>
         private class MapViewDelegate : MKMapViewDelegate
         {
             private MapRenderer _renderer;
@@ -88,14 +90,33 @@ namespace XamMapz.iOS
                 _renderer = renderer;
             }
 
+            public override void DidSelectAnnotationView(MKMapView mapView, MKAnnotationView view)
+            {
+                if (view is MKPinAnnotationView)
+                {
+                    // clicked on a pin
+                    var pin = _renderer._dictionary.Pins.Get(view.Annotation as MKPointAnnotation);
+                    if (pin == null)
+                        return;
+
+                    pin.OnClicked();
+                }
+            }
+
+            public override void RegionChanged(MKMapView mapView, bool animated)
+            {
+                MessagingCenter.Send<IMapRenderer, MapMessage>(_renderer, MapMessage.RendererMessage,
+                    new ViewChangeMessage(_renderer.Map) { Span = mapView.Region.ToMapSpan() });
+            }
+
             public override MKOverlayView GetViewForOverlay(MKMapView mapView, IMKOverlay overlay)
             {
                 if (overlay is MKPolyline)
                 {
                     var overlayPolyline = (MKPolyline)overlay;
-                    var polyline = _renderer._polylines[overlayPolyline];
+                    var polyline = _renderer._dictionary.Polylines.Get(overlayPolyline);
                     var polylineView = new MKPolylineView(overlayPolyline);
-                    polylineView.StrokeColor = polyline.Color.ToUIColor();
+                    _renderer.UpdatePolylineColor(polyline, polylineView);
                     return polylineView;
                 }
 
@@ -109,22 +130,14 @@ namespace XamMapz.iOS
                     var annotationPoint = (MKPointAnnotation)annotation;
                     // create pin annotation view
                     //                MKAnnotationView pinView = (MKPinAnnotationView)mapView.DequeueReusableAnnotation (pId);
-
                     //                if (pinView == null)
-                    var pinView = new MKPinAnnotationView(annotation, "myPinId");
 
-                    //                pinView.PinColor = annotationPoint..Red;
+                    var pinView = new MKPinAnnotationView(annotation, "myPinId");
+                    _renderer.UpdatePinColor(_renderer._dictionary.Pins.Get(annotationPoint), pinView);
                     pinView.CanShowCallout = true;
 
                     return pinView;
                 }
-                //            if (annotation is MKPolyline)
-                //            {
-                //                var annotationPolyline = (MKPolyline)annotation;
-                //                var polylineView = new mkan(annotationPolyline);
-                //
-                //                return polylineView;
-                //            }
 
                 return null;
             }
@@ -137,14 +150,28 @@ namespace XamMapz.iOS
                 return Element as Map;
             }
         }
-            
+
         private void UpdateRegion()
         {
-//            var camera = NativeMap.Camera.Copy() as MKMapCamera;
-//            camera.CenterCoordinate = Map.Region.Center.ToCoordinate2D();
             NativeMap.Region = Map.Region.ToMkCoordinateRegion();
-//            NativeMap.SetCamera(camera, false);
         }
+
+        private void UpdatePinColor(MapPin pin, MKPinAnnotationView nativeView)
+        {
+            if (nativeView != null)
+            {
+                nativeView.PinTintColor = pin.Color.ToUIColor();
+            }
+        }
+
+        private void UpdatePolylineColor(MapPolyline polyline, MKPolylineView nativeView)
+        {
+            if (nativeView != null)
+            {
+                nativeView.StrokeColor = polyline.Color.ToUIColor();
+            }
+        }
+
 
         #region IMapRenderer implementation
 
@@ -179,10 +206,7 @@ namespace XamMapz.iOS
             {
                 // Update pin's color
                 var nativeView = NativeMap.ViewForAnnotation(nativePin) as MKPinAnnotationView;
-                if (nativeView != null)
-                {
-                    nativeView.PinTintColor = pin.Color.ToUIColor();
-                }
+                UpdatePinColor(pin, nativeView);
             }
             else if (e.PropertyName == MapPin.PositionProperty.PropertyName)
             {
@@ -200,11 +224,13 @@ namespace XamMapz.iOS
             if (e.PropertyName == MapPolyline.ColorProperty.PropertyName)
             {
                 // change color of the polyline
-                nativeView.TintColor = polyline.Color.ToUIColor();
+                UpdatePolylineColor(polyline, nativeView);
             }
             else if (e.PropertyName == MapPolyline.ZIndexProperty.PropertyName)
             {
                 // change Z-index of the polyline
+                nativeView.RemoveFromSuperview();
+                NativeMap.InsertOverlay(nativePolyline, NativeMap.Overlays.Length - 1);
                 //line.ZIndex = polyline.ZIndex;
             }
             else if (e.PropertyName == MapPolyline.PositionsProperty)
@@ -217,7 +243,8 @@ namespace XamMapz.iOS
         public void RemoveNativePin(MKPointAnnotation nativePin)
         {
             NativeMap.RemoveAnnotation(nativePin);
-            nativePin.Dispose();
+//            nativePin.Dispose();
+            _dictionary.Pins.Remove(nativePin);
         }
 
         public MKPointAnnotation AddNativePin(MapPin pin)
@@ -227,7 +254,7 @@ namespace XamMapz.iOS
                 Title = pin.Label,
                 Coordinate = pin.Position.ToCoordinate2D()
             };
-                
+            _dictionary.Pins.Add(pin, nativePin);    
             NativeMap.AddAnnotation(nativePin);
             return nativePin;
         }
@@ -237,7 +264,7 @@ namespace XamMapz.iOS
             var coords = from pos in polyline.Positions
                                   select pos.ToCoordinate2D();
             var nativePolyline = MKPolyline.FromCoordinates(coords.ToArray());
-            _polylines.Add(nativePolyline, polyline);
+            _dictionary.Polylines.Add(polyline, nativePolyline);
             NativeMap.AddOverlay(nativePolyline);
             return nativePolyline;
         }
@@ -246,8 +273,8 @@ namespace XamMapz.iOS
         {
             // remove the old polyline from the map
             NativeMap.RemoveAnnotation(nativePolyline);
-            nativePolyline.Dispose();
-            _polylines.Remove(nativePolyline);
+//            nativePolyline.Dispose();
+            _dictionary.Polylines.Remove(nativePolyline);
         }
 
         #endregion

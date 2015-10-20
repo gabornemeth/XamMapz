@@ -39,6 +39,8 @@ namespace XamMapz.Droid
 
         private Dictionary<MapPolyline, PolylineAdv> _polylines = new Dictionary<MapPolyline, PolylineAdv>();
 
+
+
         public MapRenderer()
         {
             Markers = new Dictionary<MapPin, Marker>();

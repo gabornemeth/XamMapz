@@ -57,6 +57,16 @@ namespace XamMapz.iOS
         {
             return new MKCoordinateRegion(span.Center.ToCoordinate2D(), new MKCoordinateSpan(span.LatitudeDegrees, span.LongitudeDegrees));
         }
+
+        public static Position ToPosition(this CLLocationCoordinate2D coord)
+        {
+            return new Position(coord.Latitude, coord.Longitude);
+        }
+
+        public static MapSpan ToMapSpan(this MKCoordinateRegion region)
+        {
+            return new MapSpan(region.Center.ToPosition(), region.Span.LatitudeDelta, region.Span.LongitudeDelta);
+        }
     }
 }
 
