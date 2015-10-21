@@ -67,7 +67,6 @@ namespace XamMapz
             }
         }
 
-
         #region Pins
 
         private void OnPinsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -123,7 +122,7 @@ namespace XamMapz
         private void AddMarker(MapPin pin)
         {
             var nativePin = _renderer.AddNativePin(pin);
-            _dict.Pins.Add(pin, nativePin);
+            _dict.Pins.AddOrUpdate(pin, nativePin);
         }
 
         private void RemoveMarker(MapPin pin)
@@ -212,7 +211,8 @@ namespace XamMapz
             if (line == null)
                 return;
 
-            _renderer.OnPolylinePropertyChanged(polyline, line, e);
+            _renderer.OnPolylinePropertyChanged(polyline, ref line, e);
+            _dict.Polylines.AddOrUpdate(polyline, line); // native instance can be changed
         }
 
         private void OnPolylinesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -287,7 +287,7 @@ namespace XamMapz
         private void AddPolyline(MapPolyline polyline)
         {
             var nativePolyline = _renderer.AddNativePolyline(polyline);
-            _dict.Polylines.Add(polyline, nativePolyline);
+            _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
         }
 
         #endregion

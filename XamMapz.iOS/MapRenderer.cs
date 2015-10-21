@@ -1,4 +1,13 @@
-﻿using System;
+﻿//
+// MapRenderer.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+
+using System;
 using Xamarin.Forms;
 using MapKit;
 using Map = XamMapz.Map;
@@ -215,7 +224,7 @@ namespace XamMapz.iOS
             }
         }
 
-        public void OnPolylinePropertyChanged(MapPolyline polyline, MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
+        public void OnPolylinePropertyChanged(MapPolyline polyline, ref MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var nativeView = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
             if (nativeView == null)
@@ -229,14 +238,16 @@ namespace XamMapz.iOS
             else if (e.PropertyName == MapPolyline.ZIndexProperty.PropertyName)
             {
                 // change Z-index of the polyline
-                nativeView.RemoveFromSuperview();
-                NativeMap.InsertOverlay(nativePolyline, NativeMap.Overlays.Length - 1);
+                // we need to readd the polyline
+                RemoveNativePolyline(nativePolyline);
+                nativePolyline = AddNativePolyline(polyline);
+//                NativeMap.InsertOverlay(nativePolyline, NativeMap.Overlays.Length - 1);
                 //line.ZIndex = polyline.ZIndex;
             }
             else if (e.PropertyName == MapPolyline.PositionsProperty)
             {
                 RemoveNativePolyline(nativePolyline);
-                AddNativePolyline(polyline);
+                nativePolyline = AddNativePolyline(polyline);
             }
         }
 
@@ -254,7 +265,7 @@ namespace XamMapz.iOS
                 Title = pin.Label,
                 Coordinate = pin.Position.ToCoordinate2D()
             };
-            _dictionary.Pins.Add(pin, nativePin);    
+            _dictionary.Pins.AddOrUpdate(pin, nativePin);    
             NativeMap.AddAnnotation(nativePin);
             return nativePin;
         }
@@ -264,8 +275,26 @@ namespace XamMapz.iOS
             var coords = from pos in polyline.Positions
                                   select pos.ToCoordinate2D();
             var nativePolyline = MKPolyline.FromCoordinates(coords.ToArray());
-            _dictionary.Polylines.Add(polyline, nativePolyline);
-            NativeMap.AddOverlay(nativePolyline);
+            // Linear search the place of the polyline
+            int i = 0;
+            if (NativeMap.Overlays != null)
+            {
+                for (i = 0; i < NativeMap.Overlays.Length; i++)
+                {
+                    if (NativeMap.Overlays[i] is MKPolyline)
+                    {
+                        var p = _dictionary.Polylines.Get((MKPolyline)NativeMap.Overlays[i]);
+                        if (p == null)
+                            continue;
+                        if (p.ZIndex > polyline.ZIndex)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            _dictionary.Polylines.AddOrUpdate(polyline, nativePolyline);
+            NativeMap.InsertOverlay(nativePolyline, i);
             return nativePolyline;
         }
 

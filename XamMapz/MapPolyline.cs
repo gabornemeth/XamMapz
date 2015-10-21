@@ -1,5 +1,5 @@
 ﻿//
-// MapRoute.cs
+// MapPolyline.cs
 //
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
@@ -105,6 +105,11 @@ namespace XamMapz
             
             if (PositionChanged != null)
                 PositionChanged(this, e);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("<MapPolyline: 0x{0:x}>", GetHashCode());
         }
     }
 }
