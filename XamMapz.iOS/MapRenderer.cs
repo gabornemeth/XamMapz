@@ -15,6 +15,10 @@ using XamMapz.Messaging;
 using System.Linq;
 using UIKit;
 using System.Collections.Generic;
+using CoreGraphics;
+using Xamarin.Forms.Platform.iOS;
+using CoreLocation;
+using System.Diagnostics;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.iOS.MapRenderer))]
 namespace XamMapz.iOS
@@ -60,9 +64,38 @@ namespace XamMapz.iOS
                 Unbind();
             if (e.NewElement != null)
             {
+//                if (Control == null)
+//                {
+//                    SetNativeControl(new MKMapView(CGRect.Empty));
+//                }
                 Bind(e.NewElement as Map);
                 UpdateRegion();
+//                UpdateIsShowingUser();
             }
+        }
+
+//        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+//        {
+//            if (e.PropertyName == Map.IsShowingUserProperty.PropertyName)
+//            {
+//                UpdateIsShowingUser();
+//            }
+//            else
+//                base.OnElementPropertyChanged(sender, e);
+//        }
+
+        private CLLocationManager _locationManager;
+
+        private void UpdateIsShowingUser()
+        {
+            Debug.WriteLine("ShowsUserLocation before: {0}", NativeMap.ShowsUserLocation);
+            if (Map.IsShowingUser && UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+            {
+                _locationManager = new CLLocationManager();
+                _locationManager.RequestWhenInUseAuthorization(); // only in foreground
+            }
+            NativeMap.ShowsUserLocation = Map.IsShowingUser;
+            Debug.WriteLine("ShowsUserLocation after: {0}", NativeMap.ShowsUserLocation);
         }
 
         private void Unbind()
@@ -97,6 +130,21 @@ namespace XamMapz.iOS
             public MapViewDelegate(MapRenderer renderer)
             {
                 _renderer = renderer;
+            }
+
+            public override void DidUpdateUserLocation(MKMapView mapView, MKUserLocation userLocation)
+            {
+                Debug.WriteLine("DidUpdateUserLocation");
+            }
+
+            public override void DidStopLocatingUser(MKMapView mapView)
+            {
+                Debug.WriteLine("DidStopLocatingUser");
+            }
+
+            public override void WillStartLocatingUser(MKMapView mapView)
+            {
+                Debug.WriteLine("WillStartLocatingUser. ShowsUserLocation = {0}", mapView.ShowsUserLocation);
             }
 
             public override void DidSelectAnnotationView(MKMapView mapView, MKAnnotationView view)
@@ -138,9 +186,6 @@ namespace XamMapz.iOS
                 {
                     var annotationPoint = (MKPointAnnotation)annotation;
                     // create pin annotation view
-                    //                MKAnnotationView pinView = (MKPinAnnotationView)mapView.DequeueReusableAnnotation (pId);
-                    //                if (pinView == null)
-
                     var pinView = new MKPinAnnotationView(annotation, "myPinId");
                     _renderer.UpdatePinColor(_renderer._dictionary.Pins.Get(annotationPoint), pinView);
                     pinView.CanShowCallout = true;
@@ -201,7 +246,7 @@ namespace XamMapz.iOS
 
         public void AddPolylinePosition(MKPolyline nativePolyline, Xamarin.Forms.Maps.Position position, int index)
         {
-            var view = NativeMap.GetViewForOverlay(NativeMap, nativePolyline) as MKPolylineView;
+            var view = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
 //            using (var latlng = pos.ToLatLng())
 //            {
 //                route.Add(latlng);
