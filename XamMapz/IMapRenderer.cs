@@ -15,7 +15,7 @@ namespace XamMapz
     public interface IMapRenderer<TPin, TPolyline> : IMapRenderer
     {
         void OnPinPropertyChanged(MapPin pin, TPin nativePin, PropertyChangedEventArgs e);
-        void OnPolylinePropertyChanged(MapPolyline polyline, ref TPolyline nativePolyline, PropertyChangedEventArgs e);
+        void OnPolylinePropertyChanged(MapPolyline polyline, TPolyline nativePolyline, PropertyChangedEventArgs e);
         void RemoveNativePin(TPin nativePin);
         TPin AddNativePin(MapPin pin);
 

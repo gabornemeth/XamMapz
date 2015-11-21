@@ -42,7 +42,7 @@ namespace XamMapz.iOS
 
         public MapRenderer()
         {
-            _renderHelper = new MapRenderHelper<MKPointAnnotation, MKPolyline>(this);
+            _renderHelper = new MapRenderHelper<MKPointAnnotation, MKPolyline>(this, _dictionary);
         }
 
         private bool _isDisposed;
@@ -74,15 +74,15 @@ namespace XamMapz.iOS
             }
         }
 
-//        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-//        {
-//            if (e.PropertyName == Map.IsShowingUserProperty.PropertyName)
-//            {
-//                UpdateIsShowingUser();
-//            }
-//            else
-//                base.OnElementPropertyChanged(sender, e);
-//        }
+        //        protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //        {
+        //            if (e.PropertyName == Map.IsShowingUserProperty.PropertyName)
+        //            {
+        //                UpdateIsShowingUser();
+        //            }
+        //            else
+        //                base.OnElementPropertyChanged(sender, e);
+        //        }
 
         private CLLocationManager _locationManager;
 
@@ -247,11 +247,14 @@ namespace XamMapz.iOS
         public void AddPolylinePosition(MKPolyline nativePolyline, Xamarin.Forms.Maps.Position position, int index)
         {
             var view = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
-//            using (var latlng = pos.ToLatLng())
-//            {
-//                route.Add(latlng);
-//            }
+//            if (view == null)
+            {
+                // no position yet
+                var polyline = _dictionary.Polylines.Get(nativePolyline);
+                RemoveNativePolyline(nativePolyline);
 
+                AddNativePolyline(polyline);
+            }
         }
 
         public void OnPinPropertyChanged(MapPin pin, MKPointAnnotation nativePin, System.ComponentModel.PropertyChangedEventArgs e)
@@ -269,7 +272,7 @@ namespace XamMapz.iOS
             }
         }
 
-        public void OnPolylinePropertyChanged(MapPolyline polyline, ref MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
+        public void OnPolylinePropertyChanged(MapPolyline polyline, MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var nativeView = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
             if (nativeView == null)
@@ -286,8 +289,6 @@ namespace XamMapz.iOS
                 // we need to readd the polyline
                 RemoveNativePolyline(nativePolyline);
                 nativePolyline = AddNativePolyline(polyline);
-//                NativeMap.InsertOverlay(nativePolyline, NativeMap.Overlays.Length - 1);
-                //line.ZIndex = polyline.ZIndex;
             }
             else if (e.PropertyName == MapPolyline.PositionsProperty)
             {
@@ -340,15 +341,17 @@ namespace XamMapz.iOS
             }
             _dictionary.Polylines.AddOrUpdate(polyline, nativePolyline);
             NativeMap.InsertOverlay(nativePolyline, i);
+            Debug.WriteLine(string.Format("Native polyline {0:x} added.", nativePolyline.GetHashCode()));
             return nativePolyline;
         }
 
         public void RemoveNativePolyline(MKPolyline nativePolyline)
         {
             // remove the old polyline from the map
-            NativeMap.RemoveAnnotation(nativePolyline);
+            NativeMap.RemoveOverlay(nativePolyline);
 //            nativePolyline.Dispose();
             _dictionary.Polylines.Remove(nativePolyline);
+            Debug.WriteLine(string.Format("Native polyline {0:x} removed.", nativePolyline.GetHashCode()));
         }
 
         #endregion
