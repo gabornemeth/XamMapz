@@ -77,7 +77,7 @@ namespace XamMapz
             }
             set
             {
-                MoveToRegion(new MapSpan(value, Region.LatitudeDegrees, Region.LongitudeDegrees));
+                MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new MoveMessage(this, value));
             }
         }
 
@@ -101,7 +101,7 @@ namespace XamMapz
 
         public Point ProjectToScreen(Position position)
         {
-            var msg = new MapProjectMessage(this, position);
+            var msg = new ProjectionMessage(this, position);
             MessagingCenter.Send<XamMapz.Map, MapMessage>(this, MapMessage.Message, msg);
             return msg.ScreenPosition;
         }

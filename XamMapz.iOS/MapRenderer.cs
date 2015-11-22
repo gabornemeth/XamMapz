@@ -31,6 +31,7 @@ namespace XamMapz.iOS
     {
         private MapRenderHelper<MKPointAnnotation, MKPolyline> _renderHelper;
         private MapDictionary<MKPointAnnotation, MKPolyline> _dictionary = new MapDictionary<MKPointAnnotation, MKPolyline>();
+        private MapViewDelegate _mapViewDelegate;
 
         protected MKMapView NativeMap
         {
@@ -43,6 +44,7 @@ namespace XamMapz.iOS
         public MapRenderer()
         {
             _renderHelper = new MapRenderHelper<MKPointAnnotation, MKPolyline>(this, _dictionary);
+            _mapViewDelegate = new MapViewDelegate(this);
         }
 
         private bool _isDisposed;
@@ -112,7 +114,7 @@ namespace XamMapz.iOS
                 _renderHelper.BindToElement(map);
                 // overwriting existing delegate throws exception, so set it to null first
                 NativeMap.Delegate = null;
-                NativeMap.Delegate = new MapViewDelegate(this);
+                NativeMap.Delegate = _mapViewDelegate;
             }
             catch (Exception ex)
             {
@@ -130,6 +132,24 @@ namespace XamMapz.iOS
             public MapViewDelegate(MapRenderer renderer)
             {
                 _renderer = renderer;
+            }
+
+            public bool IsRegionChanging { get; private set; }
+
+            public override void RegionWillChange(MKMapView mapView, bool animated)
+            {
+                Debug.WriteLine("RegionWillChange");
+                if (IsRegionChanging)
+                    return;
+                IsRegionChanging = true;
+            }
+
+            public override void RegionChanged(MKMapView mapView, bool animated)
+            {
+                Debug.WriteLine("RegionChanged");
+                MessagingCenter.Send<IMapRenderer, MapMessage>(_renderer, MapMessage.RendererMessage,
+                    new ViewChangeMessage(_renderer.Map) { Span = mapView.Region.ToMapSpan() });
+                IsRegionChanging = false;
             }
 
             public override void DidUpdateUserLocation(MKMapView mapView, MKUserLocation userLocation)
@@ -158,12 +178,6 @@ namespace XamMapz.iOS
 
                     pin.OnClicked();
                 }
-            }
-
-            public override void RegionChanged(MKMapView mapView, bool animated)
-            {
-                MessagingCenter.Send<IMapRenderer, MapMessage>(_renderer, MapMessage.RendererMessage,
-                    new ViewChangeMessage(_renderer.Map) { Span = mapView.Region.ToMapSpan() });
             }
 
             public override MKOverlayView GetViewForOverlay(MKMapView mapView, IMKOverlay overlay)
@@ -234,13 +248,22 @@ namespace XamMapz.iOS
             if (message is ZoomMessage)
             {
 //                var msg = (ZoomMessage)message;
-                UpdateRegion();
+                if (_mapViewDelegate.IsRegionChanging == false)
+                    UpdateRegion();
             }
-            else if (message is MapProjectMessage)
+            else if (message is ProjectionMessage)
             {
-                var msg = (MapProjectMessage)message;
+                var msg = (ProjectionMessage)message;
                 var screenPos = MKMapPoint.FromCoordinate(msg.Position.ToCoordinate2D());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
+            }
+            else if (message is MoveMessage)
+            {
+                if (_mapViewDelegate.IsRegionChanging == false)
+                {
+                    var msg = (MoveMessage)message;
+                    NativeMap.CenterCoordinate = msg.Target.ToCoordinate2D();
+                }
             }
         }
 
@@ -275,13 +298,12 @@ namespace XamMapz.iOS
         public void OnPolylinePropertyChanged(MapPolyline polyline, MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var nativeView = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
-            if (nativeView == null)
-                return;
             
             if (e.PropertyName == MapPolyline.ColorProperty.PropertyName)
             {
                 // change color of the polyline
-                UpdatePolylineColor(polyline, nativeView);
+                if (nativeView != null)
+                    UpdatePolylineColor(polyline, nativeView);
             }
             else if (e.PropertyName == MapPolyline.ZIndexProperty.PropertyName)
             {

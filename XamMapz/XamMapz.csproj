@@ -48,7 +48,6 @@
     <Compile Include="MapPolyline.cs" />
     <Compile Include="MapRouteChangeEventArgs.cs" />
     <Compile Include="MapViewChangedEventArgs.cs" />
-    <Compile Include="Messaging\MapProjectMessage.cs" />
     <Compile Include="Messaging\ZoomMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ViewChangeMessage.cs" />
@@ -56,6 +55,8 @@
     <Compile Include="IMapRenderer.cs" />
     <Compile Include="MapDictionary.cs" />
     <Compile Include="MapElementDictionary.cs" />
+    <Compile Include="Messaging\MoveMessage.cs" />
+    <Compile Include="Messaging\ProjectionMessage.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

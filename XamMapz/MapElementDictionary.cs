@@ -16,10 +16,10 @@ namespace XamMapz
     /// <summary>
     /// Manages association of a Xamarin Forms map element type to a native one
     /// </summary>
-    public class MapElementDictionary<T, TNative>
+    public class MapElementDictionary<TAbstract, TNative>
     {
-        private Dictionary<TNative, T> _nativeDict = new Dictionary<TNative, T>();
-        private Dictionary<T, TNative> _dict = new  Dictionary<T, TNative>();
+        private Dictionary<TNative, TAbstract> _nativeDict = new Dictionary<TNative, TAbstract>();
+        private Dictionary<TAbstract, TNative> _dict = new  Dictionary<TAbstract, TNative>();
 
         private class Enumerator<T> : IEnumerable<T>
         {
@@ -62,9 +62,9 @@ namespace XamMapz
         /// Gets the association as an enumerable collection of Xamarin Forms Maps type.
         /// </summary>
         /// <returns>The enumerable collection</returns>
-        public IEnumerable<T> AsEnumerable()
+        public IEnumerable<TAbstract> AsEnumerable()
         {
-            return new Enumerator<T>(this);
+            return new Enumerator<TAbstract>(this);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace XamMapz
         /// </summary>
         /// <param name="pin">Xamarin Forms Maps element.</param>
         /// <param name="nativePin">Native element.</param>
-        public void AddOrUpdate(T item, TNative nativeItem)
+        public void AddOrUpdate(TAbstract item, TNative nativeItem)
         {
             if (_dict.ContainsKey(item) == false)
                 _dict.Add(item, nativeItem);
@@ -111,7 +111,7 @@ namespace XamMapz
         /// Remove the specified association.
         /// </summary>
         /// <param name="item">Association identified by <see cref="T"/> .</param>
-        public void Remove(T item)
+        public void Remove(TAbstract item)
         {
             var nativeItem = GetNative(item);
             _dict.Remove(item);
@@ -137,12 +137,12 @@ namespace XamMapz
         /// Gets the Xamarin Forms Maps part of an association
         /// </summary>
         /// <param name="nativeItem">The native item.</param>
-        public T Get(TNative nativeItem)
+        public TAbstract Get(TNative nativeItem)
         {
             if (_nativeDict.ContainsKey(nativeItem))
                 return _nativeDict[nativeItem];
 
-            return default(T);
+            return default(TAbstract);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace XamMapz
         /// </summary>
         /// <returns>The native item.</returns>
         /// <param name="item">The Xamarin Forms Maps item.</param>
-        public TNative GetNative(T item)
+        public TNative GetNative(TAbstract item)
         {
             if (_dict.ContainsKey(item))
                 return _dict[item];
