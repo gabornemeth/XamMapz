@@ -29,6 +29,6 @@ namespace XamMapz
         /// <param name="message">Message.</param>
         void OnMapMessage(XamMapz.Map sender, MapMessage message);
 
-        void AddPolylinePosition(ref TPolyline nativePolyline, Position position, int index);
+        void AddPolylinePosition(TPolyline nativePolyline, Position position, int index);
     }
 }

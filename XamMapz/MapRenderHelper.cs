@@ -189,8 +189,7 @@ namespace XamMapz
                 foreach (Position pos in e.NewItems)
                 {
                     var nativePolyline = _dict.Polylines.GetNative(polyline);
-                    _renderer.AddPolylinePosition(ref nativePolyline, pos, e.NewStartingIndex + idx++);
-                    _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
+                    _renderer.AddPolylinePosition(nativePolyline, pos, e.NewStartingIndex + idx++);
                 }
             }
             else

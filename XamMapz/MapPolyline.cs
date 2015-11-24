@@ -96,6 +96,7 @@ namespace XamMapz
         {
             _positions = new ObservableCollection<Position>();
             _positions.CollectionChanged += Positions_CollectionChanged;
+            ZIndex = 1;
         }
 
         private void Positions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
