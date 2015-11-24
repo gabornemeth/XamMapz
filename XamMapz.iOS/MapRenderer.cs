@@ -43,7 +43,7 @@ namespace XamMapz.iOS
 
         public MapRenderer()
         {
-            _renderHelper = new MapRenderHelper<MKPointAnnotation, MKPolyline>(this, _dictionary);
+            _renderHelper = new MapRenderHelper<MKPointAnnotation, MKPolyline>(this);
             _mapViewDelegate = new MapViewDelegate(this);
         }
 
@@ -267,7 +267,7 @@ namespace XamMapz.iOS
             }
         }
 
-        public void AddPolylinePosition(MKPolyline nativePolyline, Xamarin.Forms.Maps.Position position, int index)
+        public void AddPolylinePosition(ref MKPolyline nativePolyline, Xamarin.Forms.Maps.Position position, int index)
         {
             var view = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
 //            if (view == null)
@@ -276,7 +276,7 @@ namespace XamMapz.iOS
                 var polyline = _dictionary.Polylines.Get(nativePolyline);
                 RemoveNativePolyline(nativePolyline);
 
-                AddNativePolyline(polyline);
+                nativePolyline = AddNativePolyline(polyline);
             }
         }
 
@@ -295,7 +295,7 @@ namespace XamMapz.iOS
             }
         }
 
-        public void OnPolylinePropertyChanged(MapPolyline polyline, MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
+        public void OnPolylinePropertyChanged(MapPolyline polyline, ref MKPolyline nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
         {
             var nativeView = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
             

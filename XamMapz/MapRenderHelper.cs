@@ -15,18 +15,18 @@ namespace XamMapz
     /// </summary>
     public class MapRenderHelper<TPin, TPolyline>
     {
-        private MapDictionary<TPin, TPolyline> _dict;
+        private MapDictionary<TPin, TPolyline> _dict = new MapDictionary<TPin, TPolyline>();
         private IMapRenderer<TPin, TPolyline> _renderer;
         private XamMapz.Map _map;
 
-        public MapRenderHelper(IMapRenderer<TPin, TPolyline> renderer, MapDictionary<TPin, TPolyline> dict)
+        public MapRenderHelper(IMapRenderer<TPin, TPolyline> renderer/*, MapDictionary<TPin, TPolyline> dict*/)
         {
             if (renderer == null)
                 throw new ArgumentNullException("renderer");
             _renderer = renderer;
-            if (dict == null)
-                throw new ArgumentNullException("dict");
-            _dict = dict;
+//            if (dict == null)
+//                throw new ArgumentNullException("dict");
+//            _dict = dict;
         }
 
         public void UnbindFromElement()
@@ -94,7 +94,7 @@ namespace XamMapz
             }
             else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                ClearMarkers();
+                ClearPins();
             }
         }
 
@@ -123,7 +123,8 @@ namespace XamMapz
 
         private void AddPin(MapPin pin)
         {
-            _renderer.AddNativePin(pin);
+            var nativePin = _renderer.AddNativePin(pin);
+            _dict.Pins.AddOrUpdate(pin, nativePin);
         }
 
         private void RemovePin(MapPin pin)
@@ -133,23 +134,24 @@ namespace XamMapz
                 return;
 
             _renderer.RemoveNativePin(pinToRemove);
+            _dict.Pins.Remove(pin);
             UnbindPin(pin);
         }
 
-        private void ClearMarkers()
+        private void ClearPins()
         {
             var pins = _dict.Pins.AsEnumerable().ToArray();
             // Remove all markers
             foreach (var pin in pins)
             {
-                _renderer.RemoveNativePin(_dict.Pins.GetNative(pin));
+                RemovePin(pin);
                 UnbindPin(pin);
             }
         }
 
         private void UpdatePins()
         {
-            ClearMarkers();
+            ClearPins();
             foreach (var pin in _map.Pins)
             {
                 AddPin(pin);
@@ -186,7 +188,9 @@ namespace XamMapz
                 var idx = 0;
                 foreach (Position pos in e.NewItems)
                 {
-                    _renderer.AddPolylinePosition(_dict.Polylines.GetNative(polyline), pos, e.NewStartingIndex + idx++);
+                    var nativePolyline = _dict.Polylines.GetNative(polyline);
+                    _renderer.AddPolylinePosition(ref nativePolyline, pos, e.NewStartingIndex + idx++);
+                    _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
                 }
             }
             else
@@ -203,11 +207,12 @@ namespace XamMapz
             if (polyline == null)
                 return;
 
-            var line = _dict.Polylines.GetNative(polyline);
-            if (line == null)
+            var nativePolyline = _dict.Polylines.GetNative(polyline);
+            if (nativePolyline == null)
                 return;
 
-            _renderer.OnPolylinePropertyChanged(polyline, line, e);
+            _renderer.OnPolylinePropertyChanged(polyline, ref nativePolyline, e);
+            _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
         }
 
         private void OnPolylinesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -254,6 +259,7 @@ namespace XamMapz
                 return;
             
             _renderer.RemoveNativePolyline(nativePolyline);
+            _dict.Polylines.Remove(polyline);
         }
 
         /// <summary>
@@ -275,7 +281,8 @@ namespace XamMapz
         /// <param name="polyline">Polyline to add.</param>
         private void AddPolyline(MapPolyline polyline)
         {
-            _renderer.AddNativePolyline(polyline);
+            var nativePolyline = _renderer.AddNativePolyline(polyline);
+            _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
         }
 
         #endregion
