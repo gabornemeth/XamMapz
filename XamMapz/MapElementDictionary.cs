@@ -77,7 +77,7 @@ namespace XamMapz
         }
 
         /// <summary>
-        /// Adds a new association.
+        /// Adds a new association or updates a current one.
         /// </summary>
         /// <param name="pin">Xamarin Forms Maps element.</param>
         /// <param name="nativePin">Native element.</param>

@@ -302,8 +302,6 @@ namespace XamMapz.iOS
 
         public void OnPolylinePropertyChanged(MapPolyline polyline, ref MKPolylineEx nativePolyline, System.ComponentModel.PropertyChangedEventArgs e)
         {
-//            var nativeView = NativeMap.ViewForOverlay(nativePolyline) as MKPolylineView;
-            
             if (e.PropertyName == MapPolyline.ColorProperty.PropertyName ||
                 e.PropertyName == MapPolyline.ZIndexProperty.PropertyName)
             {

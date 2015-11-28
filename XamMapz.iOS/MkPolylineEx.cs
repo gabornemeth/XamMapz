@@ -95,8 +95,11 @@ namespace XamMapz.iOS
                     foreach (var polyline in _polylines)
                     {
                         _map.RemoveOverlay(polyline);
-                        var newIndex = GetOverlayIndex(value);
-                        _map.InsertOverlay(polyline, newIndex);
+                    }
+                    var newIndex = GetOverlayIndex(value);
+                    foreach (var polyline in _polylines)
+                    {
+                        _map.InsertOverlay(polyline, newIndex++);
                     }
                 }
             }

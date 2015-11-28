@@ -281,7 +281,8 @@ namespace XamMapz
         private void AddPolyline(MapPolyline polyline)
         {
             var nativePolyline = _renderer.AddNativePolyline(polyline);
-            _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
+            if (nativePolyline != null)
+                _dict.Polylines.AddOrUpdate(polyline, nativePolyline);
         }
 
         #endregion
