@@ -38,6 +38,7 @@ namespace XamMapz
                 _suspendPositionsChanged.Suspend();
                 try
                 {
+                    _positions.Clear();
                     foreach (var pos in value)
                     {
                         _positions.Add(pos);

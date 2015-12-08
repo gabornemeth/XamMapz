@@ -123,9 +123,9 @@ namespace XamMapz.Droid
                 //var msg = (ZoomMessage)message;
                 UpdateRegion();
             }
-            else if (message is MapProjectMessage)
+            else if (message is ProjectionMessage)
             {
-                var msg = (MapProjectMessage)message;
+                var msg = (ProjectionMessage)message;
                 var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
             }
