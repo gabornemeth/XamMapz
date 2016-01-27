@@ -5,3 +5,4 @@ XamMapz.Droid/obj/
 XamMapz.Droid/bin/
 XamMapz.iOS/bin/
 XamMapz.iOS/obj/
+*.nupkg

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>XamMapz</id>
+    <version>0.3</version>
+    <title>XamMapz</title>
+    <authors>Gabor Nemeth</authors>
+    <owners>Gabor Nemeth</owners>
+    <licenseUrl>https://github.com/gabornemeth/XamMapz/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/gabornemeth/XamMapz/</projectUrl>
+<!--    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Advanced map control for Xamarin Forms.</description>
+    <releaseNotes>First version available via NuGet.</releaseNotes>
+    <copyright>Copyright - Gabor Nemeth © 2015</copyright>
+    <tags>xamarin forms maps</tags>
+    <dependencies>
+      <group targetFramework="Xamarin.iOS10">
+        <dependency id="Xamarin.Forms" version="1.5.1.6471" />
+        <dependency id="Xamarin.Forms.Maps" version="1.5.1.6471" />
+      </group>
+      <group targetFramework="MonoAndroid50">
+        <dependency id="Xamarin.Android.Support.Design" version="23.0.1.3" />
+        <dependency id="Xamarin.Android.Support.v4" version="23.0.1.3" />
+        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="23.0.1.3" />
+        <dependency id="Xamarin.Android.Support.v7.CardView" version="23.0.1.3" />
+        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="23.0.1.3" />
+        <dependency id="Xamarin.Forms" version="1.5.1.6471" />
+        <dependency id="Xamarin.Forms.Maps" version="1.5.1.6471" />
+        <dependency id="Xamarin.GooglePlayServices.Base" version="27.0.0.0" />
+        <dependency id="Xamarin.GooglePlayServices.Basement" version="27.0.0.0" />
+        <dependency id="Xamarin.GooglePlayServices.Maps" version="27.0.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Xamarin.iOS -->
+    <file src="XamMapz.iOS/bin/Release/XamMapz.dll" target="lib\Xamarin.iOS10\XamMapz.dll" />
+    <file src="XamMapz.iOS/bin/Release/XamMapz.iOS.dll" target="lib\Xamarin.iOS10\XamMapz.iOS.dll" />
+    <!-- Xamarin.Android -->
+    <file src="XamMapz.Droid/bin/Release/XamMapz.dll" target="lib\MonoAndroid50\XamMapz.dll" />
+    <file src="XamMapz.Droid/bin/Release/XamMapz.Droid.dll" target="lib\MonoAndroid50\XamMapz.Droid.dll" />
+  </files>
+</package>
