@@ -1,6 +1,7 @@
 packages/
-XamMapz.Droid/obj/
-XamMapz/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
-XamMapz/obj/
-XamMapz.Droid/bin/
 XamMapz/bin/
+XamMapz/obj/
+XamMapz.Droid/obj/
+XamMapz.Droid/bin/
+XamMapz.iOS/bin/
+XamMapz.iOS/obj/
