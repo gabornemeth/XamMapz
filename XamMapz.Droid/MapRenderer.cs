@@ -105,13 +105,13 @@ namespace XamMapz.Droid
                 NativeMap.MarkerClick += NativeMap_MarkerClick;
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
-                MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (map1, message) =>
+                MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (sender, message) =>
                     {
                         // Handle only messages sent by Element
-                        if (map1 != MapEx)
+                        if (sender != MapEx)
                             return;
                         
-                        OnMapMessage(map1, message);
+                        OnMapMessage(sender, message);
                     });
             }
         }
@@ -128,6 +128,16 @@ namespace XamMapz.Droid
                 var msg = (ProjectionMessage)message;
                 var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
+            }
+            else if (message is MoveMessage)
+            {
+                var msg = (MoveMessage)message;
+                UpdateGoogleMap(formsMap =>
+                    {
+                        var cameraUpdate = CameraUpdateFactory.NewLatLng(msg.Target.ToLatLng());
+                        NativeMap.MoveCamera(cameraUpdate);
+                    });
+
             }
         }
 
