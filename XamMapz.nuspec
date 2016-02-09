@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>XamMapz</id>
-    <version>0.3</version>
+    <version>0.3.1</version>
     <title>XamMapz</title>
     <authors>Gabor Nemeth</authors>
     <owners>Gabor Nemeth</owners>
@@ -15,6 +15,10 @@
     <copyright>Copyright - Gabor Nemeth © 2015</copyright>
     <tags>xamarin forms maps</tags>
     <dependencies>
+      <group targetFramework="portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10">
+        <dependency id="Xamarin.Forms" version="1.5.1.6471" />
+        <dependency id="Xamarin.Forms.Maps" version="1.5.1.6471" />
+      </group>
       <group targetFramework="Xamarin.iOS10">
         <dependency id="Xamarin.Forms" version="1.5.1.6471" />
         <dependency id="Xamarin.Forms.Maps" version="1.5.1.6471" />
@@ -34,11 +38,13 @@
     </dependencies>
   </metadata>
   <files>
+    <!-- Portable -->
+    <file src="XamMapz/bin/Release/XamMapz.dll" target="lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\" />
     <!-- Xamarin.iOS -->
-    <file src="XamMapz.iOS/bin/Release/XamMapz.dll" target="lib\Xamarin.iOS10\XamMapz.dll" />
-    <file src="XamMapz.iOS/bin/Release/XamMapz.iOS.dll" target="lib\Xamarin.iOS10\XamMapz.iOS.dll" />
+    <file src="XamMapz.iOS/bin/Release/XamMapz.dll" target="lib\Xamarin.iOS10\" />
+    <file src="XamMapz.iOS/bin/Release/XamMapz.iOS.dll" target="lib\Xamarin.iOS10\" />
     <!-- Xamarin.Android -->
-    <file src="XamMapz.Droid/bin/Release/XamMapz.dll" target="lib\MonoAndroid50\XamMapz.dll" />
-    <file src="XamMapz.Droid/bin/Release/XamMapz.Droid.dll" target="lib\MonoAndroid50\XamMapz.Droid.dll" />
+    <file src="XamMapz.Droid/bin/Release/XamMapz.dll" target="lib\MonoAndroid50\" />
+    <file src="XamMapz.Droid/bin/Release/XamMapz.Droid.dll" target="lib\MonoAndroid50\" />
   </files>
 </package>
