@@ -1,4 +1,13 @@
-﻿using System;
+﻿//
+// IMapRenderer.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+        
+using System;
 using System.ComponentModel;
 using XamMapz.Messaging;
 using Xamarin.Forms.Maps;

@@ -1,4 +1,13 @@
-﻿using System;
+﻿//
+// IosExtensions.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+        
+using System;
 using UIKit;
 using Xamarin.Forms.Maps;
 using CoreLocation;
@@ -13,6 +22,7 @@ namespace XamMapz.iOS
     {
         public static UIColor ToUIColor(this MapPinColor color)
         {
+            // TODO: support all of the MapPinColors
             switch (color)
             {
                 case MapPinColor.Azure:

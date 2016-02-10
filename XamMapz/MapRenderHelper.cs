@@ -1,4 +1,13 @@
-﻿using System;
+﻿//
+// MapRenderHelper.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2015, Gabor Nemeth
+//
+        
+using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Xamarin.Forms;
@@ -19,14 +28,11 @@ namespace XamMapz
         private IMapRenderer<TPin, TPolyline> _renderer;
         private XamMapz.Map _map;
 
-        public MapRenderHelper(IMapRenderer<TPin, TPolyline> renderer/*, MapDictionary<TPin, TPolyline> dict*/)
+        public MapRenderHelper(IMapRenderer<TPin, TPolyline> renderer)
         {
             if (renderer == null)
                 throw new ArgumentNullException("renderer");
             _renderer = renderer;
-//            if (dict == null)
-//                throw new ArgumentNullException("dict");
-//            _dict = dict;
         }
 
         public void UnbindFromElement()

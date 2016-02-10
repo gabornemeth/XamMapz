@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>XamMapz</id>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <title>XamMapz</title>
     <authors>Gabor Nemeth</authors>
     <owners>Gabor Nemeth</owners>
@@ -31,9 +31,8 @@
         <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="23.0.1.3" />
         <dependency id="Xamarin.Forms" version="1.5.1.6471" />
         <dependency id="Xamarin.Forms.Maps" version="1.5.1.6471" />
-        <dependency id="Xamarin.GooglePlayServices.Base" version="27.0.0.0" />
-        <dependency id="Xamarin.GooglePlayServices.Basement" version="27.0.0.0" />
-        <dependency id="Xamarin.GooglePlayServices.Maps" version="27.0.0.0" />
+        <dependency id="Xamarin.GooglePlayServices.Base" version="26.0.0.0" />
+        <dependency id="Xamarin.GooglePlayServices.Maps" version="26.0.0.0" />
       </group>
     </dependencies>
   </metadata>

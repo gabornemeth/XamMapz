@@ -13,10 +13,16 @@ using Xamarin.Forms.Maps;
 
 namespace XamMapz
 {
+    /// <summary>
+    /// Map pin
+    /// </summary>
     public class MapPin : BindableObject
     {
         private string _label;
 
+        /// <summary>
+        /// Label of the pin
+        /// </summary>
         public string Label
         {
             get { return _label; }
@@ -69,6 +75,9 @@ namespace XamMapz
 
         #endregion
 
+        /// <summary>
+        /// Identifier
+        /// </summary>
         public string Id { get; internal set; }
 
         public event EventHandler Clicked;

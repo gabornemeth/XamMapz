@@ -24,6 +24,9 @@ namespace XamMapz
     {
         private ObservableCollection<MapPin> _pins = new ObservableCollection<MapPin>();
 
+        /// <summary>
+        /// Collection of <see cref="MapPin" />s
+        /// </summary>
         public new IList<MapPin> Pins
         {
             get { return _pins; }
@@ -34,7 +37,7 @@ namespace XamMapz
             get { return _pins; }
         }
 
-        public event EventHandler<MapViewChangedEventArgs> ViewChanged;
+        public event EventHandler<MapViewChangeEventArgs> ViewChanged;
 
         public Map()
         {
@@ -58,7 +61,7 @@ namespace XamMapz
                 var msg = (ViewChangeMessage)message;
                 Region = msg.Span;
                 if (ViewChanged != null)
-                    ViewChanged(this, new MapViewChangedEventArgs(msg.Span, msg.ZoomLevel));
+                    ViewChanged(this, new MapViewChangeEventArgs(msg.Span, msg.ZoomLevel));
                 Debug.WriteLine("ViewChangeMessage recieved:\n\tPosition: {0} {1}", msg.Span.Center.Latitude, msg.Span.Center.Longitude);
             }
         }

@@ -27,6 +27,9 @@ namespace XamMapz
 
         public const string PositionsProperty = "Positions";
 
+        /// <summary>
+        /// Geographical positions of the polyline
+        /// </summary>
         public IList<Position> Positions
         {
             get

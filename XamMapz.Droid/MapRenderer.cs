@@ -1,5 +1,5 @@
 //
-// MapExRenderer.cs
+// MapRenderer.cs
 //
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
