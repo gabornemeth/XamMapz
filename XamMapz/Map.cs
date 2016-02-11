@@ -84,11 +84,29 @@ namespace XamMapz
             }
         }
 
+        public BindableProperty RegionProperty = BindableProperty.Create<Map, MapSpan>(map => map.Region, null, propertyChanged: OnRegionChanged);
+
         public MapSpan Region
         {
-            get;
-            private set;
+            get
+            {
+                return GetValue(RegionProperty) as MapSpan;
+            }
+            private set
+            {
+                SetValue(RegionProperty, value);
+            }
         }
+
+        private static void OnRegionChanged(BindableObject bindable, MapSpan oldValue, MapSpan newValue)
+        {
+            if (oldValue == newValue)
+                return;
+
+            var map = (Map)bindable;
+            map.OnPropertyChanged("Center");
+        }
+
 
         private ObservableCollection<MapPolyline> _polylines = new ObservableCollection<MapPolyline>();
 

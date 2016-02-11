@@ -6,3 +6,6 @@ XamMapz.Droid/bin/
 XamMapz.iOS/bin/
 XamMapz.iOS/obj/
 *.nupkg
+Samples/XamMapz.Sample.Droid/obj/
+Samples/XamMapz.Sample.Droid/bin/
+*.userprefs

@@ -489,6 +489,9 @@ namespace XamMapz.Droid
         {
             UpdateGoogleMap(formsMap =>
                 {
+                    if (MapEx.Region == null)
+                        return;
+
                     var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
                     NativeMap.MoveCamera(cameraUpdate);
                 });
