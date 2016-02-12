@@ -9,3 +9,5 @@ XamMapz.iOS/obj/
 Samples/XamMapz.Sample.Droid/obj/
 Samples/XamMapz.Sample.Droid/bin/
 *.userprefs
+Samples/XamMapz.Sample.iOS/bin/
+Samples/XamMapz.Sample.iOS/obj/
