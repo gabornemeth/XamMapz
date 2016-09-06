@@ -84,7 +84,7 @@ namespace XamMapz
             }
         }
 
-        public BindableProperty RegionProperty = BindableProperty.Create<Map, MapSpan>(map => map.Region, null, propertyChanged: OnRegionChanged);
+		public BindableProperty RegionProperty = BindableProperty.Create(nameof(Region), typeof(MapSpan), typeof(Map), propertyChanged: OnRegionChanged);
 
         public MapSpan Region
         {
@@ -98,13 +98,13 @@ namespace XamMapz
             }
         }
 
-        private static void OnRegionChanged(BindableObject bindable, MapSpan oldValue, MapSpan newValue)
+        private static void OnRegionChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (oldValue == newValue)
                 return;
 
             var map = (Map)bindable;
-            map.OnPropertyChanged("Center");
+			map.OnPropertyChanged(nameof(Center));
         }
 
 

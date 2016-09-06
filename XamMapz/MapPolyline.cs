@@ -13,7 +13,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
-using System.Linq;
 
 namespace XamMapz
 {
@@ -58,7 +57,7 @@ namespace XamMapz
 
         #region Color bindable property
 
-        public static readonly BindableProperty ColorProperty = BindableProperty.Create<MapPolyline, Color>(route => route.Color, Color.Default);
+		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(MapPolyline), Color.Default);
 
         public Color Color
         {
@@ -78,7 +77,7 @@ namespace XamMapz
 
         #region ZIndex bindable property
 
-        public static readonly BindableProperty ZIndexProperty = BindableProperty.Create<MapPolyline, float>(route => route.ZIndex, 1.0f);
+		public static readonly BindableProperty ZIndexProperty = BindableProperty.Create(nameof(ZIndex), typeof(float), typeof(MapPolyline), 1.0f);
 
         public float ZIndex
         {

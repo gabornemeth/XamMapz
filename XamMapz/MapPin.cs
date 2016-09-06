@@ -38,7 +38,7 @@ namespace XamMapz
 
         #region Color bindable property
 
-        public static readonly BindableProperty ColorProperty = BindableProperty.Create<MapPin, MapPinColor>(pin => pin.Color, MapPinColor.Cyan);
+		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(MapPinColor), typeof(MapPin), MapPinColor.Cyan);
 
         /// <summary>
         /// Color of the pin
@@ -59,7 +59,7 @@ namespace XamMapz
 
         #region Position bindable property
 
-        public static readonly BindableProperty PositionProperty = BindableProperty.Create<MapPin, Position>(pin => pin.Position, new Position(0, 0));
+		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(Position), typeof(MapPin), new Position(0, 0));
 
         /// <summary>
         /// Geographical position of the pin
