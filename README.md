@@ -1,5 +1,7 @@
 # XamMapz
 
+[![Build status](https://ci.appveyor.com/api/projects/status/a54k830boin0we53?svg=true)](https://ci.appveyor.com/project/gabornemeth/xammapz)
+
 Map control for Xamarin Forms.
 This project is aimed to cure the shortcomings of Xamarin Forms Maps by exposing all the functionality and make the most possible component extensible.
 
