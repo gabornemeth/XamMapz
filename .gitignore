@@ -12,3 +12,4 @@ Samples/XamMapz.Sample.Droid/bin/
 Samples/XamMapz.Sample.iOS/bin/
 Samples/XamMapz.Sample.iOS/obj/
 *.suo
+*.bak
