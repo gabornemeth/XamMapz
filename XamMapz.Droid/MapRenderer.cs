@@ -18,10 +18,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Maps.Android;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Maps;
-using XamMapz;
-using XamMapz.Droid;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
+using Android.Content;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
 namespace XamMapz.Droid
@@ -40,8 +39,7 @@ namespace XamMapz.Droid
         private Dictionary<MapPolyline, PolylineAdv> _polylines = new Dictionary<MapPolyline, PolylineAdv>();
 
 
-
-        public MapRenderer()
+        public MapRenderer(Context context) : base(context)
         {
             Markers = new Dictionary<MapPin, Marker>();
         }
@@ -81,8 +79,11 @@ namespace XamMapz.Droid
             if (map != null)
             {
                 MessagingCenter.Unsubscribe<Map, MapMessage>(this, MapMessage.Message);
-                NativeMap.CameraChange -= NativeMap_CameraChange;
-                NativeMap.MarkerClick -= NativeMap_MarkerClick;
+                if (NativeMap != null)
+                {
+                    NativeMap.CameraChange -= NativeMap_CameraChange;
+                    NativeMap.MarkerClick -= NativeMap_MarkerClick;
+                }
                 map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged -= OnPolylinesCollectionChanged;
                 foreach (var polyline in map.Polylines)
@@ -101,8 +102,12 @@ namespace XamMapz.Droid
         {
             if (map != null)
             {
-                NativeMap.CameraChange += NativeMap_CameraChange;
-                NativeMap.MarkerClick += NativeMap_MarkerClick;
+                if (NativeMap != null)
+                {
+                    NativeMap.CameraChange += NativeMap_CameraChange;
+                    NativeMap.MarkerClick += NativeMap_MarkerClick;
+                    NativeMap.TrafficEnabled = false;
+                }
                 map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
                 MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (sender, message) =>
@@ -110,10 +115,16 @@ namespace XamMapz.Droid
                         // Handle only messages sent by Element
                         if (sender != MapEx)
                             return;
-                        
+
                         OnMapMessage(sender, message);
                     });
             }
+        }
+
+        protected override void OnMapReady(GoogleMap map)
+        {
+            base.OnMapReady(map);
+            BindToElement(Element as Map);
         }
 
         protected virtual void OnMapMessage(Map map, MapMessage message)
@@ -329,7 +340,7 @@ namespace XamMapz.Droid
             e.Handled = true;
         }
 
-        protected override void OnElementChanged(ElementChangedEventArgs<View> e)
+        protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.Maps.Map> e)
         {
             base.OnElementChanged(e);
 
@@ -341,7 +352,6 @@ namespace XamMapz.Droid
             if (e.NewElement != null)
             {
                 BindToElement(e.NewElement as Map);
-                NativeMap.TrafficEnabled = false;
             }
         }
 
@@ -416,7 +426,7 @@ namespace XamMapz.Droid
             }
         }
 
-        private Polyline AddPolyline(PolylineOptions option)
+        private Android.Gms.Maps.Model.Polyline AddPolyline(PolylineOptions option)
         {
             var polyline = NativeMap.AddPolyline(option);
             polyline.Color = option.Color;

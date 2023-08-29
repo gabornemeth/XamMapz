@@ -13,3 +13,4 @@ Samples/XamMapz.Sample.iOS/bin/
 Samples/XamMapz.Sample.iOS/obj/
 *.suo
 *.bak
+.vs/
