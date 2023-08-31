@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>XamMapz</id>
-    <version>2.3.0.107</version>
+    <version>5.0.0.2612-rev2</version>
     <title>XamMapz</title>
     <authors>Gabor Nemeth</authors>
     <owners>Gabor Nemeth</owners>
@@ -11,35 +11,24 @@
 <!--    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Advanced map control for Xamarin Forms.</description>
-    <releaseNotes>Update to Xamarin.Forms 2.3.0.107</releaseNotes>
-    <copyright>Copyright - Gabor Nemeth © 2015-2016</copyright>
+    <releaseNotes>Update to Xamarin.Forms 5.0.0.2612</releaseNotes>
+    <copyright>Copyright - Gabor Nemeth © 2015-2023</copyright>
     <tags>xamarin forms maps</tags>
     <dependencies>
-      <group targetFramework="portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10">
-        <dependency id="Xamarin.Forms" version="2.3.0.107" />
-        <dependency id="Xamarin.Forms.Maps" version="2.3.0.107" />
+      <group targetFramework="netstandard2.0">
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
       </group>
       <group targetFramework="Xamarin.iOS10">
-        <dependency id="Xamarin.Forms" version="2.3.0.107" />
-        <dependency id="Xamarin.Forms.Maps" version="2.3.0.107" />
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
       </group>
       <group targetFramework="MonoAndroid60">
-        <dependency id="Xamarin.Android.Support.Design" version="23.3.0" />
-        <dependency id="Xamarin.Android.Support.v4" version="23.3.0" />
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="23.3.0" />
-        <dependency id="Xamarin.Android.Support.v7.CardView" version="23.3.0" />
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="23.3.0" />
-        <dependency id="Xamarin.Forms" version="2.3.0.107" />
-        <dependency id="Xamarin.Forms.Maps" version="2.3.0.107" />
-        <dependency id="Xamarin.GooglePlayServices.Base" version="29.0.0.1" />
-        <dependency id="Xamarin.GooglePlayServices.Basement" version="29.0.0.1" />
-        <dependency id="Xamarin.GooglePlayServices.Maps" version="29.0.0.1" />
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <!-- Portable -->
-    <file src="XamMapz/bin/Release/XamMapz.dll" target="lib/portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10" />
+    <file src="XamMapz/bin/Release/netstandard2.0/XamMapz.dll" target="lib/netstandard2.0" />
     <!-- Xamarin.iOS -->
     <file src="XamMapz.iOS/bin/Release/XamMapz.dll" target="lib/Xamarin.iOS10" />
     <file src="XamMapz.iOS/bin/Release/XamMapz.iOS.dll" target="lib/Xamarin.iOS10" />

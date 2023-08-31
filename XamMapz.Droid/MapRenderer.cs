@@ -502,11 +502,14 @@ namespace XamMapz.Droid
         {
             UpdateGoogleMap(formsMap =>
                 {
-                    if (MapEx.Region == null && NativeMap != null)
+                    if (MapEx.Region == null)
                         return;
 
-                    var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
-                    NativeMap.MoveCamera(cameraUpdate);
+                    if (NativeMap != null)
+                    {
+                        var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
+                        NativeMap.MoveCamera(cameraUpdate);
+                    }
                 });
         }
 
