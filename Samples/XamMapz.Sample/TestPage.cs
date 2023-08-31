@@ -9,6 +9,7 @@ namespace XamMapz.Sample
     {
         public TestPage()
         {
+            this.Padding = new Thickness(5);
             Content = new XamMapz.Map();
         }
     }

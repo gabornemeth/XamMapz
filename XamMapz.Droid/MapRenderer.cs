@@ -145,8 +145,11 @@ namespace XamMapz.Droid
                 var msg = (MoveMessage)message;
                 UpdateGoogleMap(formsMap =>
                     {
-                        var cameraUpdate = CameraUpdateFactory.NewLatLng(msg.Target.ToLatLng());
-                        NativeMap.MoveCamera(cameraUpdate);
+                        if (NativeMap != null)
+                        {
+                            var cameraUpdate = CameraUpdateFactory.NewLatLng(msg.Target.ToLatLng());
+                            NativeMap.MoveCamera(cameraUpdate);
+                        }
                     });
 
             }
@@ -499,7 +502,7 @@ namespace XamMapz.Droid
         {
             UpdateGoogleMap(formsMap =>
                 {
-                    if (MapEx.Region == null)
+                    if (MapEx.Region == null && NativeMap != null)
                         return;
 
                     var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
