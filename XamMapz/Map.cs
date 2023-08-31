@@ -27,20 +27,15 @@ namespace XamMapz
         /// <summary>
         /// Collection of <see cref="MapPin" />s
         /// </summary>
-        public new IList<MapPin> Pins
-        {
-            get { return _pins; }
-        }
+        public new IList<MapPin> Pins => _pins;
 
-        internal ObservableCollection<MapPin> PinsInternal
-        {
-            get { return _pins; }
-        }
+        internal ObservableCollection<MapPin> PinsInternal => _pins;
 
         public event EventHandler<MapViewChangeEventArgs> ViewChanged;
 
         public Map()
         {
+            MoveToLastRegionOnLayoutChange = false;
             MessagingCenter.Subscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
                 {
                     if (message.Map != this)
@@ -76,7 +71,7 @@ namespace XamMapz
         {
             get
             {
-                return Region.Center;
+                return Region?.Center ?? new Position();
             }
             set
             {
@@ -88,14 +83,8 @@ namespace XamMapz
 
         public MapSpan Region
         {
-            get
-            {
-                return GetValue(RegionProperty) as MapSpan;
-            }
-            private set
-            {
-                SetValue(RegionProperty, value);
-            }
+            get => GetValue(RegionProperty) as MapSpan;
+            private set =>SetValue(RegionProperty, value);
         }
 
         private static void OnRegionChanged(BindableObject bindable, object oldValue, object newValue)
@@ -110,15 +99,9 @@ namespace XamMapz
 
         private ObservableCollection<MapPolyline> _polylines = new ObservableCollection<MapPolyline>();
 
-        public IList<MapPolyline> Polylines
-        {
-            get { return _polylines; }
-        }
+        public IList<MapPolyline> Polylines => _polylines;
 
-        internal ObservableCollection<MapPolyline> PolylinesInternal
-        {
-            get { return _polylines; }
-        }
+        internal ObservableCollection<MapPolyline> PolylinesInternal => _polylines;
 
         public Point ProjectToScreen(Position position)
         {

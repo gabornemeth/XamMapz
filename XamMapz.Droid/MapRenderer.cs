@@ -21,6 +21,9 @@ using Xamarin.Forms.Maps;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
 using Android.Content;
+using System.Diagnostics;
+using Android.Util;
+using Java.Lang;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
 namespace XamMapz.Droid
@@ -64,13 +67,7 @@ namespace XamMapz.Droid
         /// <summary>
         /// View in Xamarin Forms
         /// </summary>
-        private Map MapEx
-        {
-            get
-            {
-                return Element as Map;
-            }
-        }
+        private Map MapEx => Element as Map;
 
         private bool _initialized;
 
@@ -125,7 +122,13 @@ namespace XamMapz.Droid
         {
             base.OnMapReady(map);
             BindToElement(Element as Map);
+            for (Action<GoogleMap> action; _mapActions.TryDequeue(out action);)
+            {
+                action(NativeMap);
+            }
         }
+
+        private Queue<Action<GoogleMap>> _mapActions = new Queue<Action<GoogleMap>>();
 
         protected virtual void OnMapMessage(Map map, MapMessage message)
         {
@@ -140,13 +143,13 @@ namespace XamMapz.Droid
                 var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
             }
-            else if (message is MoveMessage)
+            else if (message is MoveMessage moveMessage)
             {
-                var msg = (MoveMessage)message;
-                UpdateGoogleMap(formsMap =>
+                System.Diagnostics.Debug.WriteLine($"MoveMessage received: {moveMessage.Target.Latitude} {moveMessage.Target.Longitude}");
+                UpdateGoogleMap((formsMap, nativeMap) =>
                     {
-                        var cameraUpdate = CameraUpdateFactory.NewLatLng(msg.Target.ToLatLng());
-                        NativeMap.MoveCamera(cameraUpdate);
+                        var cameraUpdate = CameraUpdateFactory.NewLatLng(moveMessage.Target.ToLatLng());
+                        nativeMap.MoveCamera(cameraUpdate);
                     });
 
             }
@@ -327,7 +330,6 @@ namespace XamMapz.Droid
 
         protected virtual void OnCameraChange(MapSpan span, CameraPosition pos)
         {
-
         }
 
         void NativeMap_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
@@ -357,7 +359,7 @@ namespace XamMapz.Droid
 
         private void UpdatePolylines()
         {
-            UpdateGoogleMap(formsMap =>
+            UpdateGoogleMap((formsMap, nativeMap) =>
                 {
                     ClearPolylines();
 
@@ -413,57 +415,57 @@ namespace XamMapz.Droid
 
         private void AddPolyline(MapPolyline polyline)
         {
-            // add the new one
-            using (var op = CreatePolylineOptions(polyline))
+            UpdateGoogleMap((map, googleMap) =>
             {
+                if (_polylines.ContainsKey(polyline))
+                    return;
+
+                // add the new one
+                using var op = CreatePolylineOptions(polyline);
                 foreach (var pt in polyline.Positions)
                 {
                     op.Add(pt);
                 }
                 // add the last polyline segment
-                var line = PolylineAdv.Add(NativeMap, op);
+                var line = PolylineAdv.Add(googleMap, op);
                 _polylines.Add(polyline, line);
-            }
+            });
         }
 
-        private Android.Gms.Maps.Model.Polyline AddPolyline(PolylineOptions option)
-        {
-            var polyline = NativeMap.AddPolyline(option);
-            polyline.Color = option.Color;
-            polyline.Width = option.Width;
-            return polyline;
-        }
-
-        private void UpdateGoogleMap(Action<Map> action)
+        private void UpdateGoogleMap(Action<Map, GoogleMap> action)
         {
             if (Control == null)
                 return; // this should not occur
 
-            if (!_initialized && !Control.IsLaidOut)
+            if (!_initialized || !Control.IsLaidOut || NativeMap == null)
+            {
+                _mapActions.Enqueue(nativeMap => action((Map)Element, nativeMap));
                 return;
+            }
 
             var formsMap = (Map)Element;
-
-            action(formsMap);
+            action(formsMap, NativeMap);
         }
 
         private void AddMarker(MapPin pin)
         {
-            using (var op = new MarkerOptions())
+            UpdateGoogleMap((map, nativeMap) =>
             {
+                if (Markers.ContainsKey(pin)) return;
+
+                using var op = new MarkerOptions();
                 op.SetTitle(pin.Label);
                 op.SetPosition(pin.Position.ToLatLng());
                 op.SetIcon(BitmapDescriptorFactory.DefaultMarker(pin.Color.ToAndroidMarkerHue()));
-                var marker = NativeMap.AddMarker(op);
+                var marker = nativeMap.AddMarker(op);
                 pin.Id = marker.Id;
                 Markers.Add(pin, marker);
-            }
+            });
         }
 
         private void RemoveMarker(MapPin pin)
         {
-            if (Markers.ContainsKey(pin) == false)
-                return;
+            if (Markers.ContainsKey(pin) == false) return;
 
             var markerToRemove = Markers[pin];
 
@@ -497,14 +499,22 @@ namespace XamMapz.Droid
 
         private void UpdateRegion()
         {
-            UpdateGoogleMap(formsMap =>
-                {
-                    if (MapEx.Region == null)
-                        return;
+            UpdateGoogleMap((formsMap, nativeMap) =>
+            {
+                if (MapEx.Region == null)
+                    return;
 
-                    var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
-                    NativeMap.MoveCamera(cameraUpdate);
-                });
+                var bounds = MapEx.Region.ToLatLngBounds();
+                var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(bounds, 0);
+                try
+                {
+                    nativeMap.MoveCamera(cameraUpdate);
+                }
+                catch (IllegalStateException arg)
+                {
+                    Trace.WriteLine(this.GetType().FullName, $"MoveToRegion exception: {arg}");
+                }
+            });
         }
 
         private void Update()
@@ -516,8 +526,10 @@ namespace XamMapz.Droid
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
+            var initField = typeof(Xamarin.Forms.Maps.Android.MapRenderer).GetField("_init", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var initializeInBaseClass = (bool)initField.GetValue(this);
             base.OnLayout(changed, l, t, r, b);
-            if (!_initialized && r > 0 && b > 0)
+            if ((initializeInBaseClass || !_initialized) && r > 0 && b > 0)
             {
                 Update();
                 _initialized = true;
