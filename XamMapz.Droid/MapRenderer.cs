@@ -21,6 +21,7 @@ using Xamarin.Forms.Maps;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
 using Android.Content;
+using System.Diagnostics;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
 namespace XamMapz.Droid
@@ -125,7 +126,13 @@ namespace XamMapz.Droid
         {
             base.OnMapReady(map);
             BindToElement(Element as Map);
+            for (Action<GoogleMap> action; _mapActions.TryDequeue(out action);)
+            {
+                action(NativeMap);
+            }
         }
+
+        private Queue<Action<GoogleMap>> _mapActions = new Queue<Action<GoogleMap>>();
 
         protected virtual void OnMapMessage(Map map, MapMessage message)
         {
@@ -140,16 +147,13 @@ namespace XamMapz.Droid
                 var screenPos = NativeMap.Projection.ToScreenLocation(msg.Position.ToLatLng());
                 msg.ScreenPosition = new Point(screenPos.X, screenPos.Y);
             }
-            else if (message is MoveMessage)
+            else if (message is MoveMessage moveMessage)
             {
-                var msg = (MoveMessage)message;
-                UpdateGoogleMap(formsMap =>
+                System.Diagnostics.Debug.WriteLine($"MoveMessage received: {moveMessage.Target.Latitude} {moveMessage.Target.Longitude}");
+                UpdateGoogleMap((formsMap, nativeMap) =>
                     {
-                        if (NativeMap != null)
-                        {
-                            var cameraUpdate = CameraUpdateFactory.NewLatLng(msg.Target.ToLatLng());
-                            NativeMap.MoveCamera(cameraUpdate);
-                        }
+                        var cameraUpdate = CameraUpdateFactory.NewLatLng(moveMessage.Target.ToLatLng());
+                        nativeMap.MoveCamera(cameraUpdate);
                     });
 
             }
@@ -360,7 +364,7 @@ namespace XamMapz.Droid
 
         private void UpdatePolylines()
         {
-            UpdateGoogleMap(formsMap =>
+            UpdateGoogleMap((formsMap, nativeMap) =>
                 {
                     ClearPolylines();
 
@@ -437,21 +441,25 @@ namespace XamMapz.Droid
             return polyline;
         }
 
-        private void UpdateGoogleMap(Action<Map> action)
+        private void UpdateGoogleMap(Action<Map, GoogleMap> action)
         {
             if (Control == null)
                 return; // this should not occur
 
-            if (!_initialized && !Control.IsLaidOut)
+            if (!_initialized || !Control.IsLaidOut || NativeMap == null)
+            {
+                _mapActions.Enqueue(nativeMap => action((Map)Element, nativeMap));
                 return;
+            }
 
             var formsMap = (Map)Element;
-
-            action(formsMap);
+            action(formsMap, NativeMap);
         }
 
         private void AddMarker(MapPin pin)
         {
+            if (Markers.ContainsKey(pin)) return;
+
             using (var op = new MarkerOptions())
             {
                 op.SetTitle(pin.Label);
@@ -465,8 +473,7 @@ namespace XamMapz.Droid
 
         private void RemoveMarker(MapPin pin)
         {
-            if (Markers.ContainsKey(pin) == false)
-                return;
+            if (Markers.ContainsKey(pin) == false) return;
 
             var markerToRemove = Markers[pin];
 
@@ -500,16 +507,13 @@ namespace XamMapz.Droid
 
         private void UpdateRegion()
         {
-            UpdateGoogleMap(formsMap =>
+            UpdateGoogleMap((formsMap, nativeMap) =>
                 {
                     if (MapEx.Region == null)
                         return;
 
-                    if (NativeMap != null)
-                    {
-                        var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
-                        NativeMap.MoveCamera(cameraUpdate);
-                    }
+                    var cameraUpdate = CameraUpdateFactory.NewLatLngBounds(MapEx.Region.ToLatLngBounds(), 0);
+                    nativeMap.MoveCamera(cameraUpdate);
                 });
         }
 

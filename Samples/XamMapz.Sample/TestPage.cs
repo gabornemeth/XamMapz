@@ -16,7 +16,12 @@ namespace XamMapz.Sample
             this.Padding = new Thickness(5);
             Content = _map;
 
-            _map.Center = new Position(46, 16);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _map.Center = new Position(46.83, 16.83);
         }
     }
 }

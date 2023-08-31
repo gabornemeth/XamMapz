@@ -76,7 +76,7 @@ namespace XamMapz
         {
             get
             {
-                return Region.Center;
+                return Region?.Center ?? new Position();
             }
             set
             {
