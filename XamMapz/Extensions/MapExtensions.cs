@@ -4,22 +4,29 @@
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
 //
-//    Copyright (C) 2015, Gabor Nemeth
+//    Copyright (C) 2023, Gabor Nemeth
 //
-        
-using System;
-using Xamarin.Forms.Maps;
 
-namespace XamMapz.Extensions
+using Microsoft.Maui.Maps.Handlers;
+using System.Runtime.CompilerServices;
+
+namespace XamMapz
 {
     /// <summary>
-    /// Extension methods for Xamarin Forms Maps
+    /// Extension methods for Maui Maps
     /// </summary>
     public static class MapExtensions
     {
-        public static Position DistanceFrom(this Position pt, Position ptOther)
+        public static Location DistanceFrom(this Location loc, Location locOther)
         {
-            return new Position(Math.Abs(ptOther.Latitude - pt.Latitude), Math.Abs(ptOther.Longitude - pt.Longitude));
+            return new Location(Math.Abs(locOther.Latitude - loc.Latitude), Math.Abs(locOther.Longitude - loc.Longitude));
         }
+
+        public static MauiAppBuilder UseXamMapz(this MauiAppBuilder app) =>
+            app.UseMauiMaps()
+            .ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler(typeof(MapPin), typeof(MapPinHandler));
+            });
     }
 }

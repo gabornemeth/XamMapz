@@ -1,7 +1,4 @@
-﻿using System;
-using Xamarin.Forms.Maps;
-
-namespace XamMapz.Messaging
+﻿namespace XamMapz.Messaging
 {
     /// <summary>
     /// Message about repositioning the center of the view
@@ -12,9 +9,9 @@ namespace XamMapz.Messaging
         /// Gets the target.
         /// </summary>
         /// <value>The target.</value>
-        public Position Target { get; private set; }
+        public Location Target { get; private set; }
 
-        public MoveMessage(Map map, Position target) : base(map)
+        public MoveMessage(Map map, Location target) : base(map)
         {
             Target = target;
         }

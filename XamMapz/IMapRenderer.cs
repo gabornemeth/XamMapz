@@ -7,10 +7,8 @@
 //    Copyright (C) 2015, Gabor Nemeth
 //
         
-using System;
 using System.ComponentModel;
 using XamMapz.Messaging;
-using Xamarin.Forms.Maps;
 
 namespace XamMapz
 {
@@ -38,6 +36,6 @@ namespace XamMapz
         /// <param name="message">Message.</param>
         void OnMapMessage(XamMapz.Map sender, MapMessage message);
 
-        void AddPolylinePosition(TPolyline nativePolyline, Position position, int index);
+        void AddPolylineLocation(TPolyline nativePolyline, Location location, int index);
     }
 }

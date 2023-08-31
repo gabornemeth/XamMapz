@@ -7,12 +7,12 @@
 //    Copyright (C) 2015, Gabor Nemeth
 //
 
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Controls.Maps;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Xamarin.Forms;
-using Xamarin.Forms.Maps;
 using XamMapz.Messaging;
 
 namespace XamMapz
@@ -20,7 +20,7 @@ namespace XamMapz
     /// <summary>
     /// Map control based on <see cref="Xamarin.Forms.Maps.Map"/>
     /// </summary>
-    public class Map : Xamarin.Forms.Maps.Map
+    public class Map : Microsoft.Maui.Controls.Maps.Map
     {
         private ObservableCollection<MapPin> _pins = new ObservableCollection<MapPin>();
 
@@ -72,11 +72,11 @@ namespace XamMapz
             MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new ZoomMessage(this, span));
         }
 
-        public Position Center
+        public Location Center
         {
             get
             {
-                return Region?.Center ?? new Position();
+                return Region?.Center ?? new Location();
             }
             set
             {
@@ -120,9 +120,9 @@ namespace XamMapz
             get { return _polylines; }
         }
 
-        public Point ProjectToScreen(Position position)
+        public Point ProjectToScreen(Location location)
         {
-            var msg = new ProjectionMessage(this, position);
+            var msg = new ProjectionMessage(this, location);
             MessagingCenter.Send<XamMapz.Map, MapMessage>(this, MapMessage.Message, msg);
             return msg.ScreenPosition;
         }

@@ -1,5 +1,13 @@
-﻿using System;
-using Xamarin.Forms.Maps;
+﻿//
+// MapExtensions.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2023, Gabor Nemeth
+//
+
+using Microsoft.Maui.Maps;
 
 namespace XamMapz.Messaging
 {

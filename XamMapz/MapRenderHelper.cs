@@ -10,11 +10,8 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using Xamarin.Forms;
 using XamMapz.Messaging;
 using System.Collections.Specialized;
-using Xamarin.Forms.Maps;
-using System.Linq;
 
 namespace XamMapz
 {
@@ -192,10 +189,10 @@ namespace XamMapz
             {
                 // modify the points
                 var idx = 0;
-                foreach (Position pos in e.NewItems)
+                foreach (Location pos in e.NewItems)
                 {
                     var nativePolyline = _dict.Polylines.GetNative(polyline);
-                    _renderer.AddPolylinePosition(nativePolyline, pos, e.NewStartingIndex + idx++);
+                    _renderer.AddPolylineLocation(nativePolyline, pos, e.NewStartingIndex + idx++);
                 }
             }
             else

@@ -6,9 +6,8 @@
 //
 //    Copyright (C) 2015, Gabor Nemeth
 //
-        
-using System;
-using Xamarin.Forms.Maps;
+
+using Microsoft.Maui.Maps;
 
 namespace XamMapz
 {
