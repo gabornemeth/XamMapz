@@ -16,6 +16,7 @@ namespace XamMapz
     /// </summary>
     public enum MapPinColor
     {
+        Default,
         Azure,
         Blue,
         Cyan,

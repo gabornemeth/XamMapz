@@ -22,21 +22,6 @@ namespace XamMapz
     /// </summary>
     public class Map : Microsoft.Maui.Controls.Maps.Map
     {
-        private ObservableCollection<MapPin> _pins = new ObservableCollection<MapPin>();
-
-        /// <summary>
-        /// Collection of <see cref="MapPin" />s
-        /// </summary>
-        public new IList<MapPin> Pins
-        {
-            get { return _pins; }
-        }
-
-        internal ObservableCollection<MapPin> PinsInternal
-        {
-            get { return _pins; }
-        }
-
         public event EventHandler<MapViewChangeEventArgs> ViewChanged;
 
         public Map()
@@ -66,25 +51,19 @@ namespace XamMapz
             }
         }
 
-        public new void MoveToRegion(MapSpan span)
-        {
-            Region = span;
-            MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new ZoomMessage(this, span));
-        }
-
         public Location Center
         {
             get
             {
                 return Region?.Center ?? new Location();
             }
-            set
-            {
-                MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new MoveMessage(this, value));
-            }
+            //set
+            //{
+            //    MessagingCenter.Send<Map, MapMessage>(this, MapMessage.Message, new MoveMessage(this, value));
+            //}
         }
 
-		public BindableProperty RegionProperty = BindableProperty.Create(nameof(Region), typeof(MapSpan), typeof(Map), propertyChanged: OnRegionChanged);
+        public BindableProperty RegionProperty = BindableProperty.Create(nameof(Region), typeof(MapSpan), typeof(Map), propertyChanged: OnRegionChanged);
 
         public MapSpan Region
         {
@@ -104,7 +83,7 @@ namespace XamMapz
                 return;
 
             var map = (Map)bindable;
-			map.OnPropertyChanged(nameof(Center));
+            map.OnPropertyChanged(nameof(Center));
         }
 
 

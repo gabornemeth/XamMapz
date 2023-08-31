@@ -38,7 +38,7 @@ namespace XamMapz
                 return;
 
             MessagingCenter.Unsubscribe<Map, MapMessage>(this, MapMessage.Message);
-            _map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
+            //_map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
             _map.PolylinesInternal.CollectionChanged -= OnPolylinesCollectionChanged;
             foreach (var polyline in _map.Polylines)
             {
@@ -58,7 +58,7 @@ namespace XamMapz
             if (map != null)
             {
                 _map = map;
-                map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
+                //map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
                 MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (map1, message) =>
                     {
@@ -155,11 +155,11 @@ namespace XamMapz
         private void UpdatePins()
         {
             ClearPins();
-            foreach (var pin in _map.Pins)
-            {
-                AddPin(pin);
-                BindPin(pin);
-            }
+            //foreach (var pin in _map.Pins)
+            //{
+            //    AddPin(pin);
+            //    BindPin(pin);
+            //}
         }
 
 

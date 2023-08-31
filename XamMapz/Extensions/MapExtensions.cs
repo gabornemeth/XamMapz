@@ -7,8 +7,7 @@
 //    Copyright (C) 2023, Gabor Nemeth
 //
 
-using Microsoft.Maui.Maps.Handlers;
-using System.Runtime.CompilerServices;
+using Microsoft.Maui.Maps;
 
 namespace XamMapz
 {
@@ -22,11 +21,16 @@ namespace XamMapz
             return new Location(Math.Abs(locOther.Latitude - loc.Latitude), Math.Abs(locOther.Longitude - loc.Longitude));
         }
 
+        public static Location Offset(this Location loc, double latitudeOffset, double longitudeOffset)
+        {
+            return new Location(loc.Latitude + latitudeOffset, loc.Longitude + longitudeOffset);
+        }
+
         public static MauiAppBuilder UseXamMapz(this MauiAppBuilder app) =>
             app.UseMauiMaps()
             .ConfigureMauiHandlers(handlers =>
             {
-                handlers.AddHandler(typeof(MapPin), typeof(MapPinHandler));
+                handlers.AddHandler(typeof(MapPin), typeof(XamMapz.Handlers.MapPinHandler));
             });
     }
 }

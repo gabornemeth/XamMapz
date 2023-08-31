@@ -18,7 +18,7 @@ namespace XamMapz
     {
         #region Color bindable property
 
-		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(MapPinColor), typeof(MapPin), MapPinColor.Cyan);
+		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(MapPinColor), typeof(MapPin), MapPinColor.Default);
 
         /// <summary>
         /// Color of the pin
