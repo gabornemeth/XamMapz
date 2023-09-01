@@ -7,3 +7,4 @@ packages/
 *.bak
 .vs/
 *.csproj.user
+.idea/

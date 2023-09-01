@@ -1,9 +1,16 @@
-﻿using Android.Gms.Maps.Model;
+﻿//
+// MapPinHandler.cs
+//
+// Author:
+//    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
+//
+//    Copyright (C) 2023, Gabor Nemeth
+//
+
+using Android.Gms.Maps.Model;
 using Microsoft.Maui.Maps.Handlers;
 using Microsoft.Maui.Maps;
 using XamMapz.Droid;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Controls.Maps;
 
 namespace XamMapz.Handlers
 {

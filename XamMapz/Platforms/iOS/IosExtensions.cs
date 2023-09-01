@@ -9,9 +9,9 @@
         
 using System;
 using UIKit;
-using Xamarin.Forms.Maps;
 using CoreLocation;
 using MapKit;
+using Microsoft.Maui.Maps;
 
 namespace XamMapz.iOS
 {
@@ -53,12 +53,12 @@ namespace XamMapz.iOS
             }
         }
 
-        public static UIColor ToUIColor(this Xamarin.Forms.Color color)
+        public static UIColor ToUIColor(this Microsoft.Maui.Graphics.Color color)
         {
-            return new UIColor((nfloat)color.R, (nfloat)color.G, (nfloat)color.B, (nfloat)color.A);
+            return new UIColor((nfloat)color.Red, (nfloat)color.Green, (nfloat)color.Blue, (nfloat)color.Alpha);
         }
 
-        public static CLLocationCoordinate2D ToCoordinate2D(this Position position)
+        public static CLLocationCoordinate2D ToCoordinate2D(this Location position)
         {
             return new CLLocationCoordinate2D(position.Latitude, position.Longitude);   
         }
@@ -68,14 +68,14 @@ namespace XamMapz.iOS
             return new MKCoordinateRegion(span.Center.ToCoordinate2D(), new MKCoordinateSpan(span.LatitudeDegrees, span.LongitudeDegrees));
         }
 
-        public static Position ToPosition(this CLLocationCoordinate2D coord)
+        public static Location ToLocation(this CLLocationCoordinate2D coord)
         {
-            return new Position(coord.Latitude, coord.Longitude);
+            return new Location(coord.Latitude, coord.Longitude);
         }
 
         public static MapSpan ToMapSpan(this MKCoordinateRegion region)
         {
-            return new MapSpan(region.Center.ToPosition(), region.Span.LatitudeDelta, region.Span.LongitudeDelta);
+            return new MapSpan(region.Center.ToLocation(), region.Span.LatitudeDelta, region.Span.LongitudeDelta);
         }
     }
 }

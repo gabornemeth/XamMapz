@@ -18,9 +18,11 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="Platforms\Android\MapRenderer.cs" />
-	  <Compile Remove="Platforms\iOS\IosExtensions.cs" />
 	  <Compile Remove="Platforms\iOS\MapRenderer.cs" />
 	  <Compile Remove="Platforms\iOS\MkPolylineEx.cs" />
 	</ItemGroup>
@@ -33,7 +35,6 @@
 
 	<ItemGroup>
 	  <None Include="Platforms\Android\MapRenderer.cs" />
-	  <None Include="Platforms\iOS\IosExtensions.cs" />
 	  <None Include="Platforms\iOS\MapRenderer.cs" />
 	  <None Include="Platforms\iOS\MkPolylineEx.cs" />
 	</ItemGroup>

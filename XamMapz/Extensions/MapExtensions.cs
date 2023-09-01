@@ -30,6 +30,7 @@ namespace XamMapz
             app.UseMauiMaps()
             .ConfigureMauiHandlers(handlers =>
             {
+                handlers.AddHandler(typeof(Map), typeof(XamMapz.Handlers.MapHandler));
                 handlers.AddHandler(typeof(MapPin), typeof(XamMapz.Handlers.MapPinHandler));
             });
     }
