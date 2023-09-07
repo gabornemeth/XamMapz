@@ -1,42 +1,49 @@
 ﻿//
-// Map.cs
+// MapX.cs
 //
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
 //
-//    Copyright (C) 2015, Gabor Nemeth
+//    Copyright (C) 2023, Gabor Nemeth
 //
 
 using Microsoft.Maui.Maps;
-using Microsoft.Maui.Controls.Maps;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using XamMapz.Messaging;
+using System.Runtime.CompilerServices;
 
 namespace XamMapz
 {
     /// <summary>
-    /// Map control based on <see cref="Xamarin.Forms.Maps.Map"/>
+    /// Map control based on <see cref="Microsoft.Maui.Controls.Maps.Map"/>
     /// </summary>
-    public class Map : Microsoft.Maui.Controls.Maps.Map
+    public class MapX : Microsoft.Maui.Controls.Maps.Map
     {
         public event EventHandler<MapViewChangeEventArgs> ViewChanged;
 
-        public Map()
-        {
-            MessagingCenter.Subscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
-                {
-                    if (message.Map != this)
-                        return; // filter by instance
-                    OnMapMessage(message);
-                });
-        }
+        //public MapX()
+        //{
+        //    MessagingCenter.Subscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage, (map, message) =>
+        //        {
+        //            if (message.Map != this)
+        //                return; // filter by instance
+        //            OnMapMessage(message);
+        //        });
+        //}
 
-        ~Map()
+        //~MapX()
+        //{
+        //    MessagingCenter.Unsubscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage);
+        //}
+
+        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            MessagingCenter.Unsubscribe<IMapRenderer, MapMessage>(this, MapMessage.RendererMessage);
+            if (propertyName == nameof(VisibleRegion))
+            {
+                ViewChanged?.Invoke(this, new MapViewChangeEventArgs(VisibleRegion, 0));
+            }
+            base.OnPropertyChanged(propertyName);
         }
 
         protected virtual void OnMapMessage(MapMessage message)
@@ -63,7 +70,7 @@ namespace XamMapz
             //}
         }
 
-        public BindableProperty RegionProperty = BindableProperty.Create(nameof(Region), typeof(MapSpan), typeof(Map), propertyChanged: OnRegionChanged);
+        public BindableProperty RegionProperty = BindableProperty.Create(nameof(Region), typeof(MapSpan), typeof(MapX), propertyChanged: OnRegionChanged);
 
         public MapSpan Region
         {
@@ -82,19 +89,19 @@ namespace XamMapz
             if (oldValue == newValue)
                 return;
 
-            var map = (Map)bindable;
+            var map = (MapX)bindable;
             map.OnPropertyChanged(nameof(Center));
         }
 
 
-        private ObservableCollection<MapPolyline> _polylines = new ObservableCollection<MapPolyline>();
+        private ObservableCollection<PolylineX> _polylines = new ObservableCollection<PolylineX>();
 
-        public IList<MapPolyline> Polylines
+        public IList<PolylineX> Polylines
         {
             get { return _polylines; }
         }
 
-        internal ObservableCollection<MapPolyline> PolylinesInternal
+        internal ObservableCollection<PolylineX> PolylinesInternal
         {
             get { return _polylines; }
         }
@@ -102,7 +109,7 @@ namespace XamMapz
         public Point ProjectToScreen(Location location)
         {
             var msg = new ProjectionMessage(this, location);
-            MessagingCenter.Send<XamMapz.Map, MapMessage>(this, MapMessage.Message, msg);
+            MessagingCenter.Send<XamMapz.MapX, MapMessage>(this, MapMessage.Message, msg);
             return msg.ScreenPosition;
         }
     }

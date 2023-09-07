@@ -5,7 +5,7 @@
         public Location Location { get; }
         public Point ScreenPosition { get; set; }
 
-        public ProjectionMessage(Map map, Location location) : base(map)
+        public ProjectionMessage(MapX map, Location location) : base(map)
         {
             Location = location;
         }

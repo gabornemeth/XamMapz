@@ -14,20 +14,20 @@ namespace XamMapz
     /// <summary>
     /// Map pin
     /// </summary>
-    public class MapPin : Pin
+    public class PinX : Pin
     {
         #region Color bindable property
 
-		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(MapPinColor), typeof(MapPin), MapPinColor.Default);
+		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(PinColor), typeof(PinX), PinColor.Default);
 
         /// <summary>
         /// Color of the pin
         /// </summary>
-        public MapPinColor Color
+        public PinColor Color
         {
             get
             {
-                return (MapPinColor)GetValue(ColorProperty);
+                return (PinColor)GetValue(ColorProperty);
             }
             set
             {

@@ -7,8 +7,6 @@
 //    Copyright (C) 2023, Gabor Nemeth
 //
 
-using Microsoft.Maui.Maps;
-
 namespace XamMapz
 {
     /// <summary>
@@ -30,8 +28,9 @@ namespace XamMapz
             app.UseMauiMaps()
             .ConfigureMauiHandlers(handlers =>
             {
-                handlers.AddHandler(typeof(Map), typeof(XamMapz.Handlers.MapHandler));
-                handlers.AddHandler(typeof(MapPin), typeof(XamMapz.Handlers.MapPinHandler));
+                handlers.AddHandler(typeof(MapX), typeof(XamMapz.Handlers.MapXHandler));
+                handlers.AddHandler(typeof(PinX), typeof(XamMapz.Handlers.PinXHandler));
+                handlers.AddHandler(typeof(PolylineX), typeof(XamMapz.Handlers.PolylineXHandler));
             });
     }
 }

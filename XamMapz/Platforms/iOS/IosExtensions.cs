@@ -20,33 +20,33 @@ namespace XamMapz.iOS
     /// </summary>
     public static class IosExtensions
     {
-        public static UIColor ToUIColor(this MapPinColor color)
+        public static UIColor ToUIColor(this PinColor color)
         {
             // TODO: support all of the MapPinColors
             switch (color)
             {
-                case MapPinColor.Azure:
+                case PinColor.Azure:
                     throw new NotSupportedException();
 //                    return UIColor.HueAzure;
-                case MapPinColor.Blue:
+                case PinColor.Blue:
                     return UIColor.Blue;
-                case MapPinColor.Cyan:
+                case PinColor.Cyan:
                     return UIColor.Cyan;
-                case MapPinColor.Green:
+                case PinColor.Green:
                     return UIColor.Green;
-                case MapPinColor.Red:
+                case PinColor.Red:
                     return UIColor.Red;
-                case MapPinColor.Magenta:
+                case PinColor.Magenta:
                     return UIColor.Magenta;
-                case MapPinColor.Orange:
+                case PinColor.Orange:
                     return UIColor.Orange;
-                case MapPinColor.Rose:
+                case PinColor.Rose:
                     throw new NotSupportedException();
 //                    return UIColor.HueRose;
-                case MapPinColor.Violet:
+                case PinColor.Violet:
                     throw new NotSupportedException();
 //                    return UIColor.HueViolet;
-                case MapPinColor.Yellow:
+                case PinColor.Yellow:
                     return UIColor.Yellow;
                 default:
                     throw new NotSupportedException(string.Format("Unknown pin color: {0}", color));

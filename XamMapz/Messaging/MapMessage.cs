@@ -23,9 +23,9 @@ namespace XamMapz.Messaging
         /// Instance of <see cref="Map"/>
         /// </summary>
         /// <value>The map.</value>
-        public Map Map { get; private set; }
+        public MapX Map { get; private set; }
 
-        protected MapMessage(Map map)
+        protected MapMessage(MapX map)
         {
             Map = map;
         }

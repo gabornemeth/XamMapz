@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Android.Gms.Maps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,12 @@ using XamMapz.Messaging;
 
 namespace XamMapz.Handlers
 {
-    partial class MapHandler
+    partial class MapXHandler
     {
+
+        protected override void ConnectHandler(MapView platformView)
+        {
+            base.ConnectHandler(platformView);
+        }
     }
 }

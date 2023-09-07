@@ -4,9 +4,9 @@ using Microsoft.Maui.Maps.Platform;
 
 namespace XamMapz.Handlers
 {
-    class MapX : MauiMKMapView
+    class MKMapViewX : MauiMKMapView
     {
-        public MapX(IMapHandler handler) : base(handler)
+        public MKMapViewX(IMapHandler handler) : base(handler)
         {
             GetViewForAnnotation = new MKMapViewAnnotation(GetAnnotationView);
         }

@@ -34,29 +34,29 @@ namespace XamMapz.Droid
             return new Location(latLng.Latitude, latLng.Longitude);
         }
 
-        public static float ToAndroidMarkerHue(this MapPinColor color)
+        public static float ToAndroidMarkerHue(this PinColor color)
         {
             switch (color)
             {
-                case MapPinColor.Azure:
+                case PinColor.Azure:
                     return BitmapDescriptorFactory.HueAzure;
-                case MapPinColor.Blue:
+                case PinColor.Blue:
                     return BitmapDescriptorFactory.HueBlue;
-                case MapPinColor.Cyan:
+                case PinColor.Cyan:
                     return BitmapDescriptorFactory.HueCyan;
-                case MapPinColor.Green:
+                case PinColor.Green:
                     return BitmapDescriptorFactory.HueGreen;
-                case MapPinColor.Red:
+                case PinColor.Red:
                     return BitmapDescriptorFactory.HueRed;
-                case MapPinColor.Magenta:
+                case PinColor.Magenta:
                     return BitmapDescriptorFactory.HueMagenta;
-                case MapPinColor.Orange:
+                case PinColor.Orange:
                     return BitmapDescriptorFactory.HueOrange;
-                case MapPinColor.Rose:
+                case PinColor.Rose:
                     return BitmapDescriptorFactory.HueRose;
-                case MapPinColor.Violet:
+                case PinColor.Violet:
                     return BitmapDescriptorFactory.HueViolet;
-                case MapPinColor.Yellow:
+                case PinColor.Yellow:
                     return BitmapDescriptorFactory.HueYellow;
                 default:
                     throw new NotSupportedException(string.Format("Unknown pin color: {0}", color));

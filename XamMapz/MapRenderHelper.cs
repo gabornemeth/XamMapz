@@ -23,7 +23,7 @@ namespace XamMapz
     {
         private MapDictionary<TPin, TPolyline> _dict = new MapDictionary<TPin, TPolyline>();
         private IMapRenderer<TPin, TPolyline> _renderer;
-        private XamMapz.Map _map;
+        private XamMapz.MapX _map;
 
         public MapRenderHelper(IMapRenderer<TPin, TPolyline> renderer)
         {
@@ -37,7 +37,7 @@ namespace XamMapz
             if (_map == null)
                 return;
 
-            MessagingCenter.Unsubscribe<Map, MapMessage>(this, MapMessage.Message);
+            MessagingCenter.Unsubscribe<MapX, MapMessage>(this, MapMessage.Message);
             //_map.PinsInternal.CollectionChanged -= OnPinsCollectionChanged;
             _map.PolylinesInternal.CollectionChanged -= OnPolylinesCollectionChanged;
             foreach (var polyline in _map.Polylines)
@@ -53,14 +53,14 @@ namespace XamMapz
             _map = null;
         }
 
-        public void BindToElement(Map map)
+        public void BindToElement(MapX map)
         {
             if (map != null)
             {
                 _map = map;
                 //map.PinsInternal.CollectionChanged += OnPinsCollectionChanged;
                 map.PolylinesInternal.CollectionChanged += OnPolylinesCollectionChanged;
-                MessagingCenter.Subscribe<XamMapz.Map, MapMessage>(this, MapMessage.Message, (map1, message) =>
+                MessagingCenter.Subscribe<XamMapz.MapX, MapMessage>(this, MapMessage.Message, (map1, message) =>
                     {
                         // Handle only messages sent by the current map instance
                         if (map1 != _map)
@@ -80,7 +80,7 @@ namespace XamMapz
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 // new pin(s)
-                foreach (MapPin pin in e.NewItems)
+                foreach (PinX pin in e.NewItems)
                 {
                     AddPin(pin);
                     BindPin(pin);
@@ -89,7 +89,7 @@ namespace XamMapz
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 // deleted pin(s)
-                foreach (MapPin pin in e.OldItems)
+                foreach (PinX pin in e.OldItems)
                 {
                     RemovePin(pin);
                     UnbindPin(pin);
@@ -101,12 +101,12 @@ namespace XamMapz
             }
         }
 
-        private void BindPin(MapPin pin)
+        private void BindPin(PinX pin)
         {
             pin.PropertyChanged += pin_PropertyChanged;
         }
 
-        private void UnbindPin(MapPin pin)
+        private void UnbindPin(PinX pin)
         {
             pin.PropertyChanged -= pin_PropertyChanged;
         }
@@ -114,7 +114,7 @@ namespace XamMapz
         void pin_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // Property of a pin has been changed.
-            var pin = sender as MapPin;
+            var pin = sender as PinX;
             if (pin == null)
                 return;
 
@@ -124,13 +124,13 @@ namespace XamMapz
             _renderer.OnPinPropertyChanged(pin, nativePin, e);
         }
 
-        private void AddPin(MapPin pin)
+        private void AddPin(PinX pin)
         {
             var nativePin = _renderer.AddNativePin(pin);
             _dict.Pins.AddOrUpdate(pin, nativePin);
         }
 
-        private void RemovePin(MapPin pin)
+        private void RemovePin(PinX pin)
         {
             var pinToRemove = _dict.Pins.GetNative(pin);
             if (pinToRemove == null)
@@ -167,13 +167,13 @@ namespace XamMapz
 
         #region Polylines
 
-        private void BindPolyline(MapPolyline polyline)
+        private void BindPolyline(PolylineX polyline)
         {
             polyline.PropertyChanged += polyline_PropertyChanged;
             polyline.PositionChanged += polyline_PositionChanged;
         }
 
-        private void UnbindPolyline(MapPolyline polyline)
+        private void UnbindPolyline(PolylineX polyline)
         {
             polyline.PropertyChanged -= polyline_PropertyChanged;
             polyline.PositionChanged -= polyline_PositionChanged;
@@ -181,7 +181,7 @@ namespace XamMapz
 
         private void polyline_PositionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var polyline = sender as MapPolyline;
+            var polyline = sender as PolylineX;
             if (polyline == null)
                 return;
 
@@ -205,7 +205,7 @@ namespace XamMapz
 
         void polyline_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var polyline = sender as MapPolyline;
+            var polyline = sender as PolylineX;
             if (polyline == null)
                 return;
 
@@ -222,7 +222,7 @@ namespace XamMapz
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 // new polyline(s)
-                foreach (MapPolyline polyline in e.NewItems)
+                foreach (PolylineX polyline in e.NewItems)
                 {
                     AddPolyline(polyline);
                     BindPolyline(polyline);
@@ -231,7 +231,7 @@ namespace XamMapz
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 // deleted polyline(s)
-                foreach (MapPolyline polyline in e.OldItems)
+                foreach (PolylineX polyline in e.OldItems)
                 {
                     RemovePolyline(polyline);
                     UnbindPolyline(polyline);
@@ -254,7 +254,7 @@ namespace XamMapz
             }
         }
 
-        private void RemovePolyline(MapPolyline polyline)
+        private void RemovePolyline(PolylineX polyline)
         {
             var nativePolyline = _dict.Polylines.GetNative(polyline);
             if (nativePolyline == null)
@@ -278,10 +278,10 @@ namespace XamMapz
         }
 
         /// <summary>
-        /// Adds a new instance of <see cref="MapPolyline"/>
+        /// Adds a new instance of <see cref="PolylineX"/>
         /// </summary>
         /// <param name="polyline">Polyline to add.</param>
-        private void AddPolyline(MapPolyline polyline)
+        private void AddPolyline(PolylineX polyline)
         {
             var nativePolyline = _renderer.AddNativePolyline(polyline);
             if (nativePolyline != null)

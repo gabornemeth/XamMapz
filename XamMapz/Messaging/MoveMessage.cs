@@ -11,7 +11,7 @@
         /// <value>The target.</value>
         public Location Target { get; private set; }
 
-        public MoveMessage(Map map, Location target) : base(map)
+        public MoveMessage(MapX map, Location target) : base(map)
         {
             Target = target;
         }

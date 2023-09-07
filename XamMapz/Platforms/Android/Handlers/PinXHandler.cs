@@ -14,22 +14,22 @@ using XamMapz.Droid;
 
 namespace XamMapz.Handlers
 {
-    public partial class MapPinHandler
+    public partial class PinXHandler
     {
-        static MapPinHandler()
+        static PinXHandler()
         {
-            Mapper.Add(MapPin.ColorProperty.PropertyName, MapPinColor);
+            Mapper.Add(PinX.ColorProperty.PropertyName, MapPinColor);
         }
 
-        public MapPinHandler() : base(Mapper)
+        public PinXHandler() : base(Mapper)
         {
         }
 
         public static void MapPinColor(IMapPinHandler handler, IMapPin pin)
         {
-            if (pin is MapPin mapPin)
+            if (pin is PinX mapPin)
             {
-                if (mapPin.Color == XamMapz.MapPinColor.Default)
+                if (mapPin.Color == XamMapz.PinColor.Default)
                 {
                     handler.PlatformView.SetIcon(null);
                 }

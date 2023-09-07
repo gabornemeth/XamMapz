@@ -34,7 +34,7 @@ namespace XamMapz
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="message">Message.</param>
-        void OnMapMessage(XamMapz.Map sender, MapMessage message);
+        void OnMapMessage(XamMapz.MapX sender, MapMessage message);
 
         void AddPolylineLocation(TPolyline nativePolyline, Location location, int index);
     }

@@ -11,11 +11,11 @@ using Microsoft.Maui.Maps.Platform;
 
 namespace XamMapz.Handlers
 {
-    partial class MapHandler
+    partial class MapXHandler
     {
         protected override MauiMKMapView CreatePlatformView()
         {
-            return new MapX(this);
+            return new MKMapViewX(this);
         }
     }
 }

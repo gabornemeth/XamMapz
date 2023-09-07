@@ -79,8 +79,8 @@ namespace XamMapz
         /// <summary>
         /// Adds a new association or updates a current one.
         /// </summary>
-        /// <param name="pin">Xamarin Forms Maps element.</param>
-        /// <param name="nativePin">Native element.</param>
+        /// <param name="item">Xamarin Forms Maps element.</param>
+        /// <param name="nativeItem">Native element.</param>
         public void AddOrUpdate(TAbstract item, TNative nativeItem)
         {
             if (_dict.ContainsKey(item) == false)
@@ -110,7 +110,7 @@ namespace XamMapz
         /// <summary>
         /// Remove the specified association.
         /// </summary>
-        /// <param name="item">Association identified by <see cref="T"/> .</param>
+        /// <param name="item">Association identified by <see cref="TAbstract"/> .</param>
         public void Remove(TAbstract item)
         {
             var nativeItem = GetNative(item);

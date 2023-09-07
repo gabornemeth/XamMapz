@@ -21,6 +21,8 @@
 	  <CreatePackage>false</CreatePackage>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="IMapRenderer.cs" />
+	  <Compile Remove="MapRenderHelper.cs" />
 	  <Compile Remove="Platforms\Android\MapRenderer.cs" />
 	  <Compile Remove="Platforms\iOS\MapRenderer.cs" />
 	  <Compile Remove="Platforms\iOS\MkPolylineEx.cs" />
@@ -33,6 +35,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Include="IMapRenderer.cs" />
+	  <None Include="MapRenderHelper.cs" />
 	  <None Include="Platforms\Android\MapRenderer.cs" />
 	  <None Include="Platforms\iOS\MapRenderer.cs" />
 	  <None Include="Platforms\iOS\MkPolylineEx.cs" />
@@ -43,7 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Handlers\MapPinHandler.cs">
+	  <Compile Update="Handlers\PinXHandler.cs">
 	    <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
 	  </Compile>
 	</ItemGroup>

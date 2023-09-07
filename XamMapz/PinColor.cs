@@ -1,5 +1,5 @@
 ﻿//
-// MapPinColor.cs
+// PinColor.cs
 //
 // Author:
 //    Gabor Nemeth (gabor.nemeth.dev@gmail.com)
@@ -7,14 +7,12 @@
 //    Copyright (C) 2015, Gabor Nemeth
 //
         
-using System;
-
 namespace XamMapz
 {
     /// <summary>
-    /// Color of <see cref="MapPin"/>
+    /// Color of <see cref="PinX"/>
     /// </summary>
-    public enum MapPinColor
+    public enum PinColor
     {
         Default,
         Azure,
