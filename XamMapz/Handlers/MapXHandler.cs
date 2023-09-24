@@ -1,6 +1,11 @@
 ﻿namespace XamMapz.Handlers
 {
-    public partial class MapXHandler : Microsoft.Maui.Maps.Handlers.MapHandler
+    public interface IMapXHandler
+    {
+        Point? ProjectToScreen(Location location);
+    }
+
+    public partial class MapXHandler
     {
     }
 }

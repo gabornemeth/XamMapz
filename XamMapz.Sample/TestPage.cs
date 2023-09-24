@@ -10,7 +10,7 @@ namespace XamMapz.Sample
         public TestPage()
         {
             _map = new MapX();
-            _map.ViewChanged += map_ViewChanged;
+            _map.VisibleRegionChanged += map_ViewChanged;
             this.Padding = new Thickness(5);
             var grid = new Grid { RowDefinitions = new RowDefinitionCollection(new[] { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) }) };
             grid.Children.Add(_map);
@@ -31,7 +31,7 @@ namespace XamMapz.Sample
             bool up = true;
             var start = center.Offset(0, -15 * step);
 
-            var polyline = new PolylineX
+            var polyline = new PolylineX(_map)
             {
                 StrokeColor = color,
                 StrokeWidth = 5,
@@ -44,7 +44,24 @@ namespace XamMapz.Sample
                 up = !up;
             }
 
+            var last = polyline.Last();
             _map.MapElements.Add(polyline);
+            var pin = new PinX(_map) { Location = last, Label = last.ToString(), Color = PinColor.Red };
+            pin.MarkerClicked += delegate
+            {
+                pin.Label = "Clicked!";
+                if (pin.Color == PinColor.Red)
+                {
+                    pin.Color = PinColor.Green;
+                    polyline.StrokeColor = Colors.Green;
+                }
+                else
+                {
+                    pin.Color = PinColor.Red;
+                    polyline.StrokeColor = Colors.Orange;
+                }
+            };
+            _map.Pins.Add(pin);
         }
 
         private void ButtonZOrder_Clicked(object sender, EventArgs e)
@@ -55,13 +72,9 @@ namespace XamMapz.Sample
 
             if (polylines.Length < 2) return;
 
-            _map.MapElements.Remove(polylines[1]);
-
             var tmp = polylines[0].ZIndex;
             polylines[0].ZIndex = polylines[1].ZIndex;
             polylines[1].ZIndex = tmp;
-
-            _map.MapElements.Add(polylines[1]);
         }
 
         private void map_ViewChanged(object sender, MapViewChangeEventArgs e)
@@ -80,9 +93,9 @@ namespace XamMapz.Sample
             var center = new Location(46.83, 16.83);
 
             _map.MoveToRegion(MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(5)));
-            _map.Pins.Add(new PinX { Label = "Center", Location = center, Color = PinColor.Green });
-            _map.Pins.Add(new PinX { Label = "Offset1", Location = center.Offset(0.01, 0.0), Color = PinColor.Blue });
-            _map.Pins.Add(new PinX { Label = "Offset2", Location = center.Offset(-0.01, 0.01) });
+            _map.Pins.Add(new PinX(_map) { Label = "Center", Location = center, Color = PinColor.Green });
+            _map.Pins.Add(new PinX(_map) { Label = "Offset1", Location = center.Offset(0.01, 0.0), Color = PinColor.Blue });
+            _map.Pins.Add(new PinX(_map) { Label = "Offset2", Location = center.Offset(-0.01, 0.01) });
 
             AddPolyline(center, Colors.Aqua, zIndex: 2, stepLatitude: 0.003);
             AddPolyline(center, Colors.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);

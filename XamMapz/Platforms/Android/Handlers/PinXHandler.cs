@@ -11,6 +11,7 @@ using Android.Gms.Maps.Model;
 using Microsoft.Maui.Maps.Handlers;
 using Microsoft.Maui.Maps;
 using XamMapz.Droid;
+using Android.Gms.Maps;
 
 namespace XamMapz.Handlers
 {
@@ -29,12 +30,16 @@ namespace XamMapz.Handlers
         {
             if (pin is PinX mapPin)
             {
-                if (mapPin.Color == XamMapz.PinColor.Default)
+                var marker = mapPin.MapHandler.GetNativeMarker(pin.MarkerId);
+
+                if (mapPin.Color == PinColor.Default)
                 {
+                    marker?.SetIcon(null);
                     handler.PlatformView.SetIcon(null);
                 }
                 else
                 {
+                    marker?.SetIcon(BitmapDescriptorFactory.DefaultMarker(mapPin.Color.ToAndroidMarkerHue()));
                     handler.PlatformView.SetIcon(BitmapDescriptorFactory.DefaultMarker(mapPin.Color.ToAndroidMarkerHue()));
                 }
             }

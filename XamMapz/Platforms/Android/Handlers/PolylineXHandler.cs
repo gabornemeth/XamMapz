@@ -19,8 +19,10 @@ namespace XamMapz.Handlers
         {
             if (polyline is PolylineX polylineX)
             {
+                var nativePolyline = polylineX.MapHandler.GetNativePolyline(polyline.MapElementId);
                 if (handler.PlatformView is PolylineOptions op)
                 {
+                    if (nativePolyline != null) nativePolyline.ZIndex = polylineX.ZIndex;
                     op.InvokeZIndex(polylineX.ZIndex);
                 }
             }

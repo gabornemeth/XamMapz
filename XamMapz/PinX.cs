@@ -8,6 +8,7 @@
 //
 
 using Microsoft.Maui.Controls.Maps;
+using XamMapz.Handlers;
 
 namespace XamMapz
 {
@@ -36,5 +37,14 @@ namespace XamMapz
         }
 
         #endregion
+
+        private readonly MapX _map;
+
+        public MapXHandler MapHandler => _map.Handler as MapXHandler;
+
+        public PinX(MapX map)
+        {
+            _map = map;
+        }
     }
 }

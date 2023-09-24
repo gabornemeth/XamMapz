@@ -9,6 +9,7 @@
 
 using Microsoft.Maui.Controls.Maps;
 using System.Collections.Specialized;
+using XamMapz.Handlers;
 
 namespace XamMapz
 {
@@ -17,6 +18,8 @@ namespace XamMapz
     /// </summary>
     public class PolylineX : Polyline
     {
+        private readonly MapX _map;
+
         #region ZIndex bindable property
 
         public static readonly BindableProperty ZIndexProperty = BindableProperty.Create(nameof(ZIndex), typeof(float), typeof(PolylineX), 1.0f);
@@ -34,6 +37,13 @@ namespace XamMapz
         public override string ToString()
         {
             return string.Format("<MapPolyline: 0x{0:x}>", GetHashCode());
+        }
+
+        public MapXHandler MapHandler => _map.Handler as MapXHandler;
+
+        public PolylineX(MapX map)
+        {
+            _map = map;
         }
     }
 }
