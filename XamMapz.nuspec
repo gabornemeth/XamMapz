@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>XamMapz</id>
-    <version>7.0.92-pre04</version>
+    <version>8.0.0-rc.2.9511</version>
     <title>XamMapz</title>
     <authors>Gabor Nemeth</authors>
     <owners>Gabor Nemeth</owners>
@@ -15,26 +15,26 @@
     <copyright>Copyright - Gabor Nemeth © 2015-2023</copyright>
     <tags>maui maps xamarin forms</tags>
     <dependencies>
-      <group targetFramework="net7.0">
-        <dependency id="Microsoft.Maui.Controls.Maps" version="7.0.92" />
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.Maui.Controls.Maps" version="8.0.0-rc.2.9511" />
       </group>
-      <group targetFramework="net7.0-android33.0">
-        <dependency id="Microsoft.Maui.Controls.Maps" version="7.0.92" />
+      <group targetFramework="net8.0-android33.0">
+        <dependency id="Microsoft.Maui.Controls.Maps" version="8.0.0-rc.2.9511" />
       </group>
-      <group targetFramework="net7.0-ios16.1">
-        <dependency id="Microsoft.Maui.Controls.Maps" version="7.0.92" />
+      <group targetFramework="net8.0-ios16.1">
+        <dependency id="Microsoft.Maui.Controls.Maps" version="8.0.0-rc.2.9511" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <!-- Portable -->
-    <file src="XamMapz/bin/Release/net7.0/XamMapz.dll" target="lib/net7.0" />
-    <file src="XamMapz/bin/Release/net7.0/XamMapz.pdb" target="lib/net7.0" />
+    <file src="XamMapz/bin/Release/net8.0/XamMapz.dll" target="lib/net8.0" />
+    <file src="XamMapz/bin/Release/net8.0/XamMapz.pdb" target="lib/net8.0" />
     <!-- iOS -->
-    <file src="XamMapz/bin/Release/net7.0-ios/XamMapz.dll" target="lib/net7.0-ios16.1" />
-    <file src="XamMapz/bin/Release/net7.0-ios/XamMapz.pdb" target="lib/net7.0-ios16.1" />
+    <file src="XamMapz/bin/Release/net8.0-ios/XamMapz.dll" target="lib/net8.0-ios16.1" />
+    <file src="XamMapz/bin/Release/net8.0-ios/XamMapz.pdb" target="lib/net8.0-ios16.1" />
     <!-- Android -->
-    <file src="XamMapz/bin/Release/net7.0-android/XamMapz.dll" target="lib/net7.0-android33.0" />
-    <file src="XamMapz/bin/Release/net7.0-android/XamMapz.pdb" target="lib/net7.0-android33.0" />
+    <file src="XamMapz/bin/Release/net8.0-android/XamMapz.dll" target="lib/net8.0-android33.0" />
+    <file src="XamMapz/bin/Release/net8.0-android/XamMapz.pdb" target="lib/net8.0-android33.0" />
   </files>
 </package>

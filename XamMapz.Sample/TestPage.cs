@@ -9,7 +9,7 @@ namespace XamMapz.Sample
 
         public TestPage()
         {
-            _map = new MapX();
+            _map = new MapX() { IsVisible = false };
             _map.VisibleRegionChanged += map_ViewChanged;
             this.Padding = new Thickness(5);
             var grid = new Grid { RowDefinitions = new RowDefinitionCollection(new[] { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) }) };
@@ -54,11 +54,13 @@ namespace XamMapz.Sample
                 {
                     pin.Color = PinColor.Green;
                     polyline.StrokeColor = Colors.Green;
+                    polyline.StrokeWidth = 8;
                 }
                 else
                 {
                     pin.Color = PinColor.Red;
                     polyline.StrokeColor = Colors.Orange;
+                    polyline.StrokeWidth = 5;
                 }
             };
             _map.Pins.Add(pin);
@@ -100,6 +102,11 @@ namespace XamMapz.Sample
             AddPolyline(center, Colors.Aqua, zIndex: 2, stepLatitude: 0.003);
             AddPolyline(center, Colors.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);
             _shapesAdded = true;
+            Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+                Dispatcher.Dispatch(() => _map.IsVisible = true);
+            });
         }
     }
 }
