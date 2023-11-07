@@ -7,13 +7,17 @@ using XamMapz.Extensions;
 
 namespace XamMapz.Sample
 {
-    public class TestPage : ContentPage
+    public class TestPage : TabbedPage
     {
+        private static readonly Position Center = new Position(46.83, 16.83);
         private Map _map;
         private Grid _container;
+        private MapPin _tempPin;
 
         public TestPage()
         {
+            var mapPage = new ContentPage { Title = "map" };
+
             _map = new Map();
             _map.ViewChanged += map_ViewChanged;
             this.Padding = new Thickness(5);
@@ -27,15 +31,63 @@ namespace XamMapz.Sample
 
             var buttons = new StackLayout { Orientation = StackOrientation.Horizontal };
             var buttonZOrder = new Button { Text = "Z order" };
-            var buttonReadd = new Button { Text = "Re-add map" };
             buttonZOrder.Clicked += ButtonZOrder_Clicked;
+            var buttonReadd = new Button { Text = "Re-add map" };
             buttonReadd.Clicked += ButtonReadd_Clicked;
+            var buttonAdd = new Button { Text = "Add" };
+            buttonAdd.Clicked += ButtonAdd_Clicked;
+            var buttonRemove = new Button { Text = "Remove" };
+            buttonRemove.Clicked += ButtonRemove_Clicked;
+
             buttons.Children.Add(buttonZOrder);
             buttons.Children.Add(buttonReadd);
+            buttons.Children.Add(buttonAdd);
+            buttons.Children.Add(buttonRemove);
+
             grid.Children.Add(buttons);
             Grid.SetRow(buttons, 1);
 
-            Content = grid;
+            mapPage.Content = grid;
+
+            Children.Add(mapPage);
+
+            var otherPage = new ContentPage { Title = "other" };
+            otherPage.Content = new Button { Text = "Click me!" };
+            Children.Add(otherPage);
+
+            _tempPin = new MapPin
+            {
+                Label = "Temporary #1",
+                Color = MapPinColor.Violet,
+                Position = Center.Offset(-0.02, 0.02)
+            };
+        }
+
+        private void ButtonZOrder_Clicked(object sender, EventArgs e)
+        {
+            var polylines = _map.Polylines.ToArray();
+
+            if (polylines.Length < 2) return;
+
+            var tmp = polylines[0].ZIndex;
+            polylines[0].ZIndex = polylines[1].ZIndex;
+            polylines[1].ZIndex = tmp;
+        }
+
+        private void ButtonRemove_Clicked(object sender, EventArgs e)
+        {
+            if (_map.Pins.Contains(_tempPin))
+            {
+                _map.Pins.Remove(_tempPin);
+            }
+        }
+
+        private void ButtonAdd_Clicked(object sender, EventArgs e)
+        {
+            if (_map.Pins.Contains(_tempPin) == false)
+            {
+                _map.Pins.Add(_tempPin);
+            }
         }
 
         private void ButtonReadd_Clicked(object sender, EventArgs e)
@@ -87,17 +139,6 @@ namespace XamMapz.Sample
                 }
             };
             _map.Pins.Add(pin);
-        }
-
-        private void ButtonZOrder_Clicked(object sender, EventArgs e)
-        {
-            var polylines = _map.Polylines.ToArray();
-
-            if (polylines.Length < 2) return;
-
-            var tmp = polylines[0].ZIndex;
-            polylines[0].ZIndex = polylines[1].ZIndex;
-            polylines[1].ZIndex = tmp;
         }
 
         private void map_ViewChanged(object sender, MapViewChangeEventArgs e)

@@ -432,12 +432,12 @@ namespace XamMapz.Droid
             });
         }
 
-        private void UpdateGoogleMap(Action<Map, GoogleMap> action)
+        protected virtual void UpdateGoogleMap(Action<Map, GoogleMap> action)
         {
             if (Control == null)
                 return; // this should not occur
 
-            if (!_initialized || !Control.IsLaidOut || NativeMap == null)
+            if (!_initialized || NativeMap == null)
             {
                 _mapActions.Enqueue(nativeMap => action((Map)Element, nativeMap));
                 return;
