@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("XamMapz for Android")]
-[assembly: AssemblyCopyright("Copyright © Gabor Nemeth 2015-2016")]
+[assembly: AssemblyCopyright("Copyright © Gabor Nemeth 2015-2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
@@ -25,5 +25,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.3.0.107")]
-[assembly: AssemblyFileVersion("2.3.0.107")]
+[assembly: AssemblyVersion("5.0.0.2612")]
+[assembly: AssemblyFileVersion("5.0.0.2612")]

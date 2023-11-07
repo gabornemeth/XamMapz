@@ -9,7 +9,8 @@ namespace XamMapz.Sample
 {
     public class TestPage : ContentPage
     {
-        private readonly Map _map;
+        private Map _map;
+        private Grid _container;
 
         public TestPage()
         {
@@ -21,14 +22,32 @@ namespace XamMapz.Sample
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             grid.Children.Add(_map);
             Grid.SetRow(_map, 0);
+
+            _container = grid;
+
             var buttons = new StackLayout { Orientation = StackOrientation.Horizontal };
             var buttonZOrder = new Button { Text = "Z order" };
+            var buttonReadd = new Button { Text = "Re-add map" };
             buttonZOrder.Clicked += ButtonZOrder_Clicked;
+            buttonReadd.Clicked += ButtonReadd_Clicked;
             buttons.Children.Add(buttonZOrder);
+            buttons.Children.Add(buttonReadd);
             grid.Children.Add(buttons);
             Grid.SetRow(buttons, 1);
 
             Content = grid;
+        }
+
+        private void ButtonReadd_Clicked(object sender, EventArgs e)
+        {
+            _map.ViewChanged -= map_ViewChanged;
+            _container.Children.Remove(_map);
+            _map = new Map();
+
+            _map.ViewChanged += map_ViewChanged;
+            _container.Children.Add(_map);
+            Grid.SetRow(_map, 0);
+            SetupMap();
         }
 
         private void AddPolyline(Position center, Color color, float zIndex, double stepLatitude = 0.0, double stepLongitude = 0.0)
@@ -88,12 +107,8 @@ namespace XamMapz.Sample
 
         bool _shapesAdded = false;
 
-        protected override void OnAppearing()
+        private void SetupMap()
         {
-            base.OnAppearing();
-
-            if (_shapesAdded) return;
-
             var center = new Position(46.83, 16.83);
 
             _map.MoveToRegion(MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(5)));
@@ -103,6 +118,15 @@ namespace XamMapz.Sample
 
             AddPolyline(center, Color.Aqua, zIndex: 2, stepLatitude: 0.003);
             AddPolyline(center, Color.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (_shapesAdded) return;
+
+            SetupMap();
             _shapesAdded = true;
         }
     }
