@@ -61,6 +61,9 @@ namespace XamMapz.Sample
                 Color = MapPinColor.Violet,
                 Position = Center.Offset(-0.02, 0.02)
             };
+
+            _map.MoveToRegion(MapSpan.FromCenterAndRadius(Center, Distance.FromKilometers(5)));
+            SetupMap();
         }
 
         private void ButtonZOrder_Clicked(object sender, EventArgs e)
@@ -150,15 +153,12 @@ namespace XamMapz.Sample
 
         private void SetupMap()
         {
-            var center = new Position(46.83, 16.83);
+            _map.Pins.Add(new MapPin { Label = "Center", Position = Center, Color = MapPinColor.Green });
+            _map.Pins.Add(new MapPin { Label = "Offset1", Position = Center.Offset(0.01, 0.0), Color = MapPinColor.Blue });
+            _map.Pins.Add(new MapPin { Label = "Offset2", Position = Center.Offset(-0.01, 0.01) });
 
-            _map.MoveToRegion(MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(5)));
-            _map.Pins.Add(new MapPin { Label = "Center", Position = center, Color = MapPinColor.Green });
-            _map.Pins.Add(new MapPin { Label = "Offset1", Position = center.Offset(0.01, 0.0), Color = MapPinColor.Blue });
-            _map.Pins.Add(new MapPin { Label = "Offset2", Position = center.Offset(-0.01, 0.01) });
-
-            AddPolyline(center, Color.Aqua, zIndex: 2, stepLatitude: 0.003);
-            AddPolyline(center, Color.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);
+            AddPolyline(Center, Color.Aqua, zIndex: 2, stepLatitude: 0.003);
+            AddPolyline(Center, Color.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);
         }
 
         protected override void OnAppearing()
@@ -167,7 +167,7 @@ namespace XamMapz.Sample
 
             if (_shapesAdded) return;
 
-            SetupMap();
+            //SetupMap();
             _shapesAdded = true;
         }
     }

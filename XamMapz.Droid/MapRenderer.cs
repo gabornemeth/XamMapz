@@ -115,6 +115,7 @@ namespace XamMapz.Droid
 
                         OnMapMessage(sender, message);
                     });
+                OnMapMessage(map, new ZoomMessage(map, map.Region));
             }
         }
 
@@ -151,7 +152,6 @@ namespace XamMapz.Droid
                         var cameraUpdate = CameraUpdateFactory.NewLatLng(moveMessage.Target.ToLatLng());
                         nativeMap.MoveCamera(cameraUpdate);
                     });
-
             }
         }
 

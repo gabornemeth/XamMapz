@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>XamMapz</id>
-    <version>5.0.0.2612-rev10</version>
+    <version>5.0.0.2622-pre01</version>
     <title>XamMapz</title>
     <authors>Gabor Nemeth</authors>
     <owners>Gabor Nemeth</owners>
@@ -11,18 +11,18 @@
 <!--    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Advanced map control for Xamarin Forms.</description>
-    <releaseNotes>Update to Xamarin.Forms 5.0.0.2612</releaseNotes>
+    <releaseNotes>Update to Xamarin.Forms.Maps 5.0.0.2622</releaseNotes>
     <copyright>Copyright - Gabor Nemeth © 2015-2023</copyright>
     <tags>xamarin forms maps</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
-        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2622" />
       </group>
       <group targetFramework="Xamarin.iOS10">
-        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2622" />
       </group>
       <group targetFramework="MonoAndroid60">
-        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2612" />
+        <dependency id="Xamarin.Forms.Maps" version="5.0.0.2622" />
       </group>
     </dependencies>
   </metadata>

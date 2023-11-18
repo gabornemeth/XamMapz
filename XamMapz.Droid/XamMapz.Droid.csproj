@@ -60,8 +60,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Xamarin.Build.Download">
+      <Version>0.11.4</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms.Maps">
-      <Version>5.0.0.2612</Version>
+      <Version>5.0.0.2622</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
