@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using XamMapz.Extensions;
@@ -19,6 +20,7 @@ namespace XamMapz.Sample
             var mapPage = new ContentPage { Title = "map" };
 
             _map = new Map();
+            _map.MoveToRegion(MapSpan.FromCenterAndRadius(Center, Distance.FromKilometers(5)));
             _map.ViewChanged += map_ViewChanged;
             this.Padding = new Thickness(5);
             var grid = new Grid { RowDefinitions = new RowDefinitionCollection() };
@@ -62,8 +64,8 @@ namespace XamMapz.Sample
                 Position = Center.Offset(-0.02, 0.02)
             };
 
-            _map.MoveToRegion(MapSpan.FromCenterAndRadius(Center, Distance.FromKilometers(5)));
             SetupMap();
+            _map.IsVisible = false;
         }
 
         private void ButtonZOrder_Clicked(object sender, EventArgs e)
@@ -95,10 +97,12 @@ namespace XamMapz.Sample
 
         private void ButtonReadd_Clicked(object sender, EventArgs e)
         {
+            // remove old map
             _map.ViewChanged -= map_ViewChanged;
             _container.Children.Remove(_map);
+            
+            // add new map
             _map = new Map();
-
             _map.ViewChanged += map_ViewChanged;
             _container.Children.Add(_map);
             Grid.SetRow(_map, 0);
@@ -149,8 +153,6 @@ namespace XamMapz.Sample
             Debug.WriteLine($"Map view changed: Lat={e.Span.Center.Latitude} Lon={e.Span.Center.Longitude} r={e.Span.Radius.Kilometers} metres");
         }
 
-        bool _shapesAdded = false;
-
         private void SetupMap()
         {
             _map.Pins.Add(new MapPin { Label = "Center", Position = Center, Color = MapPinColor.Green });
@@ -161,14 +163,12 @@ namespace XamMapz.Sample
             AddPolyline(Center, Color.Orange, zIndex: 1, stepLatitude: 0.01, stepLongitude: 0.002);
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            if (_shapesAdded) return;
-
-            //SetupMap();
-            _shapesAdded = true;
+            await Task.Delay(3000); // delay map's appearance
+            _map.IsVisible = true;
         }
     }
 }

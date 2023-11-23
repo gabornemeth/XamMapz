@@ -1,2 +1,2 @@
 msbuild XamMapz.sln -p:Configuration=Release
-nuget pack XamMapz.nuspec
+.nuget\nuget.exe pack XamMapz.nuspec

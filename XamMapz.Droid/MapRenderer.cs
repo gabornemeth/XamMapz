@@ -15,14 +15,12 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms;
-using Xamarin.Forms.Maps.Android;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Maps;
 using XamMapz.Messaging;
 using XamMapz.Extensions;
 using Android.Content;
 using System.Diagnostics;
-using Android.Util;
 using Java.Lang;
 
 [assembly: ExportRenderer(typeof(XamMapz.Map), typeof(XamMapz.Droid.MapRenderer))]
@@ -123,6 +121,16 @@ namespace XamMapz.Droid
         {
             base.OnMapReady(map);
             BindToElement(Element as Map);
+            ExecuteQueuedActions();
+        }
+
+        private void ExecuteQueuedActions()
+        {
+            if (NativeMap == null || _initialized == false)
+            {
+                return;
+            }
+
             for (Action<GoogleMap> action; _mapActions.TryDequeue(out action);)
             {
                 action(NativeMap);
@@ -311,6 +319,7 @@ namespace XamMapz.Droid
 
         void NativeMap_CameraChange(object sender, GoogleMap.CameraChangeEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"NativeMap_CameraChange {e.Position.Target}");
             UpdatePosition(e.Position);
         }
 
@@ -533,6 +542,7 @@ namespace XamMapz.Droid
             {
                 Update();
                 _initialized = true;
+                ExecuteQueuedActions();
             }
         }
     }
